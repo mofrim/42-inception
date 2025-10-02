@@ -3,9 +3,9 @@
 SHARED_DIR="./inception"
 
 qemu-system-x86_64 \
-  -enable-kvm \
-  -m 2G \
+	-enable-kvm \
   -smp 2 \
+  -m 4G \
   -drive file=nixos.qcow2,format=qcow2 \
 	-virtfs local,path="${SHARED_DIR}",security_model=none,mount_tag=shared \
 	-device e1000,netdev=net0 \

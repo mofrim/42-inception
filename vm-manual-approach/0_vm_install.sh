@@ -9,13 +9,13 @@ fi
 
 if [ ! -e ./nixos.qcow2 ]; then
 	echo ">> qcow image not found -> creating it! <<"
-	qemu-img create -f qcow2 nixos.qcow2 10G
+	qemu-img create -f qcow2 nixos.qcow2 15G
 fi
 
 echo ">> launching vm! <<"
 qemu-system-x86_64 \
   -enable-kvm \
-  -m 2G \
+  -m 4G \
   -smp 2 \
   -boot d \
   -cdrom ./$nixos_image \

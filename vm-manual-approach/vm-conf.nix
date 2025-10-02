@@ -17,8 +17,7 @@ in
     users.fmaurer = {
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
-        # TODO: change to 42 key
-       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlhRzDpd+8nwaDMnAeXjpyM/M0RhCA7LYZCEFKHWYI7 mofrim@posteo.de" 
+       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFG0nJF3ZMmkgkSAG42VOUyN65w0wSEPeZ+229UiZqW1 fmaurer@42" 
       ];
       hashedPassword = "$y$j9T$kSHZPi5yj71KzIHRera.H/$vxhVbUHlmxqvLNPuntsR.gv1tUBB42f06ZngiqAGaR7";
       extraGroups = [ "wheel" "docker" ];
@@ -165,6 +164,7 @@ in
   # Enable DBus and polkit for desktop functionality
   services.dbus.enable = true;
   services.printing.enable = false;
+  services.pipewire.enable = false;
  
   # deactivate sudo pw
   security.sudo.wheelNeedsPassword = false;
