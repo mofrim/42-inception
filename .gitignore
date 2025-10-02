@@ -6,3 +6,6 @@ wp_data/
 **/*.key
 **/*.qcow2
 **/*.crt
+**/*.iso
+vm-archive/nix-approach/stupid-approach/vm/initrd
+vm-archive/nix-approach/stupid-approach/vm/kernel
