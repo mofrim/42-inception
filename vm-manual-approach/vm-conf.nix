@@ -35,7 +35,7 @@ in
       menu = ''
         [begin] (fmaurer's 42-Inception-Box)
         [encoding] {UTF-8}
-              [exec] (alacritty) {alacritty}
+              [exec] (foot) {foot}
               [exec] (firefox) {firefox}
               [separator]
               [exit] (Exit)
@@ -127,7 +127,7 @@ in
         vim
         gnumake
         firefox
-        alacritty
+        foot
       ];
       shellAliases = {
         "cd.." = "cd ..";
@@ -161,7 +161,6 @@ in
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "fmaurer";
 
-  # Enable DBus and polkit for desktop functionality
   services.dbus.enable = true;
   services.printing.enable = false;
   services.pipewire.enable = false;
