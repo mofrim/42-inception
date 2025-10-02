@@ -1,0 +1,10 @@
+### MySQL Server ###
+## Securing the Database with ssl option and certificates ##
+## There is no control over the protocol level used. ##
+##  mariadb will use TLSv1.0 or better.  ##
+#ssl
+ssl-ca=/etc/mysql/ssl/ca-cert.pem
+ssl-cert=/etc/mysql/ssl/server-cert.pem
+ssl-key=/etc/mysql/ssl/server-key.pem
+## Set up TLS version here. For example TLS version 1.2 and 1.3 ##
+tls_version = TLSv1.2,TLSv1.3

@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Welcome to Nginx!</title>
+  </head>
+  <body>
+    <style>
+      a:hover {
+        background-color: pink;
+      }
+      p:hover {
+        background-color: yellow;
+      }
+      .main-page {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        width: 100%;
+      }
+      .card-container {
+        display: flex;
+        flex-wrap: wrap; /* allows cards to wrap */
+        gap: 10px; /* space between cards */
+        padding: 50px; /* space around */
+      }
+
+      .card,
+      .cardSpecial {
+        flex: 1 1 50px; /* flex-grow, flex-shrink, flex-basis */
+        background: lightgray;
+        padding: 20px;
+        text-align: center;
+        border-radius: 10px;
+      }
+
+      .cardSpecial {
+        flex-grow: 2;
+      }
+
+      .card:hover {
+        background-color: yellow;
+      }
+
+      a {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        text-decoration: none;
+      }
+    </style>
+    <div class="main-page">
+      <p>test</p>
+      <code>Hello, Nginx with TLSv1.3!</code>
+      <div class="card-container">
+        <div class="card">Card 1</div>
+        <div class="cardSpecial">Bla.</div>
+        <div class="card">Card 3</div>
+        <div class="card"><a href="www.powderguide.com">PG</a></div>
+      </div>
+    </div>
+  </body>
+</html>

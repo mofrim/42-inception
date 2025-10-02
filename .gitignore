@@ -1,0 +1,8 @@
+.env
+secrets
+play
+wp_data/
+**/*.pem
+**/*.key
+**/*.qcow2
+**/*.crt
