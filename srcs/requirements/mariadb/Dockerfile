@@ -13,22 +13,17 @@ COPY mariadb.cnf /etc/mysql
 COPY ./ssl/*.pem /etc/mysql/ssl/
 RUN chown -R mysql:root /etc/mysql/ssl/;
 
-# Expose the default MariaDB port
-EXPOSE 3306
-
-# Set the volume for the database
-VOLUME ["/var/lib/mysql"]
-
-# FIXME move to compose file
-ENV MARIA_ROOT_PW="bla"
-ENV MARIA_USER="bla"
-ENV MARIA_USER_PW="bla"
-ENV MARIA_DB="blub"
+# # Expose the default MariaDB port
+# EXPOSE 3306
+#
+# # Set the volume for the database
+# VOLUME ["/var/lib/mysql"]
 
 COPY maria-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/maria-entrypoint.sh;
 
 ENTRYPOINT ["maria-entrypoint.sh"]
 
-# QUESTION: why / what is the difference to `mariadbd`?
+# launching mariadb using `mariadbd-safe` is the recommended way for
+# non-system-service use.
 CMD ["mariadbd-safe"]
