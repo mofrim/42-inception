@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/09/11 16:50:35 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/05 23:40:24 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,7 +54,8 @@ play:
 	docker run -it inc_play # necessary to add `-it` for an interactive sesh
 
 comp:
-	docker compose -f ./srcs/docker-compose.yml up -d --build
+	# docker compose -f ./srcs/docker-compose.yml up -d --build
+	docker compose -f ./srcs/docker-compose.yml up --build
 
 comp-nobuild:
 	docker compose -f ./srcs/docker-compose.yml up
@@ -62,7 +63,7 @@ comp-nobuild:
 comp-down:
 	docker compose -f ./srcs/docker-compose.yml down -v
 
-comp-re: comp-down comp
+comp-re: clean comp
 
 logs:
 	@$(ECHO) "$(call log_msg,nginx logs...)"
