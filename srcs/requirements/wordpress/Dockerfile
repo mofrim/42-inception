@@ -26,6 +26,7 @@ RUN apk update && apk upgrade && apk add --no-cache \
       php82-openssl \
       php82-xml \
       php82-zip \
+      mariadb-client \
       curl \
       tar \
       bash \

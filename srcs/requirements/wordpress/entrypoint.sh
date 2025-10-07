@@ -7,21 +7,24 @@ function entry_msg () {
   echo "[wp-entrypoint.sh] $1"
 }
 
-# FIXME add more cfg here
+function escape_sed() {
+  echo "$1" | sed 's/[][}{}^/()$&.*+?|]/\\&/g'
+}
 
-# FIXME HTTP_HOST in functions.php not known error?!!
+do_the_crazy_sed () {
+  if [ $# -ne 3 ]; then
+    entry_msg "do_the_crazy_sed needs 3 args!"
+    exit 1
+  fi
+  local key_name=$1
+  # the quotes around the $2 are __KEYYYYYYY__ !!!!
+  local escaped_key_content="$(escape_sed "$2")"
+  local wpdir=$3
+  entry_msg "sedding: $key_name"
+  sed -i "s|define( '$key_name', \+'put your unique phrase here' );|define( '$key_name', '$escaped_key_content');|" $wpdir/wp-config.php
+}
 
-# FIXME http_S_://fmaurer.42.fr should be the final site-url
-
-# FIXME fill those fields from wp-config.php:
-# define( 'AUTH_KEY',         'put your unique phrase here' );
-# define( 'SECURE_AUTH_KEY',  'put your unique phrase here' );
-# define( 'LOGGED_IN_KEY',    'put your unique phrase here' );
-# define( 'NONCE_KEY',        'put your unique phrase here' );
-# define( 'AUTH_SALT',        'put your unique phrase here' );
-# define( 'SECURE_AUTH_SALT', 'put your unique phrase here' );
-# define( 'LOGGED_IN_SALT',   'put your unique phrase here' );
-# define( 'NONCE_SALT',       'put your unique phrase here' );
+# FIXME: add more cfg here
 
 # generate wp-config.php if it doesn't exist. on first-run wordpress will
 # already be downloaded and extracted to $wp_dir from the corresponding step in
@@ -35,6 +38,15 @@ if [ ! -f "$wp_dir/wp-config.php" ] && [ -f "$wp_dir/wp-config-sample.php" ]; th
     sed -i "s/username_here/$WP_DB_USER/" $wp_dir/wp-config.php
     sed -i "s/password_here/$WP_DB_PW/" $wp_dir/wp-config.php
     sed -i "s/localhost/$WP_DB_HOST/" $wp_dir/wp-config.php
+
+    do_the_crazy_sed "AUTH_KEY" "$WP_CFG_AUTH_KEY" $wp_dir
+    do_the_crazy_sed "SECURE_AUTH_KEY" "$WP_CFG_SECURE_AUTH_KEY" $wp_dir
+    do_the_crazy_sed "LOGGED_IN_KEY" "$WP_CFG_LOGGED_IN_KEY" $wp_dir
+    do_the_crazy_sed "NONCE_KEY" "$WP_CFG_NONCE_KEY" $wp_dir
+    do_the_crazy_sed "AUTH_SALT" "$WP_CFG_AUTH_SALT" $wp_dir
+    do_the_crazy_sed "SECURE_AUTH_SALT" "$WP_CFG_SECURE_AUTH_SALT" $wp_dir
+    do_the_crazy_sed "LOGGED_IN_SALT" "$WP_CFG_LOGGED_IN_SALT" $wp_dir
+    do_the_crazy_sed "NONCE_SALT" "$WP_CFG_NONCE_SALT" $wp_dir
   else
     entry_msg "not editing wp-config..."
 fi
@@ -45,11 +57,10 @@ if [ -f /var/www/html/wp/wp-config.php ]; then
     chmod 640 /var/www/html/wp/wp-config.php
 fi
 
-if ! command -v wp; then
+if ! command -v wp &> /dev/null; then
   entry_msg "ERROR! wp-cli not found! smthing has gone wrong badly!"
   exit 1
 fi
-
 
 # wait for mariadb to become available
 until mariadb -h db -u $WP_DB_USER --password=$WP_DB_PW -e "SELECT 1;" &> /dev/null; do
@@ -67,10 +78,12 @@ if ! $wp_cmd core is-installed --url="$DOMAIN_NAME"; then
   entry_msg "setting up wordpress using wp-cli"
   $wp_cmd core install --title="$WP_SITE_TITLE" --admin_user="$WP_ADMIN_USER" \
     --admin_password="$WP_ADMIN_PW" --admin_email="$WP_ADMIN_MAIL" --skip-email
-  echo "user2 mail: $WP_USER2_MAIL"
-  echo "admin mail: $WP_ADMIN_MAIL"
   $wp_cmd user create "$WP_USER2" "$WP_USER2_MAIL" --role=editor \
     --user_pass="$WP_USER2_PW"
+
+  # making the site even healthier with these two:
+  $wp_cmd option update siteurl "https://$DOMAIN_NAME" --allow-root
+  $wp_cmd option update home "https://$DOMAIN_NAME" --allow-root
 else
   entry_msg "alrighty, wp is already setup. nothing to do here."
 fi

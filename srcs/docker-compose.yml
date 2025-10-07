@@ -9,8 +9,12 @@ services:
       - "443:443"
     depends_on:
       - wp
+    # MAGIC! setting a network alias fmaurer.42.fr -> nginx-container.
+    # this makes WP-sitehealth happy finally
     networks:
-      - inception_net
+      inception_net:
+        aliases:
+          - fmaurer.42.fr
 
   db:
     container_name: inc_wp_db
@@ -47,6 +51,14 @@ services:
       WP_USER2: ${WP_USER2}
       WP_USER2_PW: ${WP_USER2_PW}
       WP_USER2_MAIL: ${WP_USER2_MAIL}
+      WP_CFG_AUTH_KEY: ${WP_CFG_AUTH_KEY}
+      WP_CFG_SECURE_AUTH_KEY: ${WP_CFG_SECURE_AUTH_KEY}
+      WP_CFG_LOGGED_IN_KEY: ${WP_CFG_LOGGED_IN_KEY}
+      WP_CFG_NONCE_KEY: ${WP_CFG_NONCE_KEY}
+      WP_CFG_AUTH_SALT: ${WP_CFG_AUTH_SALT}
+      WP_CFG_SECURE_AUTH_SALT: ${WP_CFG_SECURE_AUTH_SALT}
+      WP_CFG_LOGGED_IN_SALT: ${WP_CFG_LOGGED_IN_SALT}
+      WP_CFG_NONCE_SALT: ${WP_CFG_NONCE_SALT}
     networks:
       - inception_net
 
