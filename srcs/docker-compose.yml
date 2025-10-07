@@ -44,6 +44,9 @@ services:
       WP_ADMIN_USER: ${WP_ADMIN_USER}
       WP_ADMIN_PW: ${WP_ADMIN_PW}
       WP_ADMIN_MAIL: ${WP_ADMIN_MAIL}
+      WP_USER2: ${WP_USER2}
+      WP_USER2_PW: ${WP_USER2_PW}
+      WP_USER2_MAIL: ${WP_USER2_MAIL}
     networks:
       - inception_net
 
