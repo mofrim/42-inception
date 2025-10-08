@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/05 23:40:24 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/08 16:41:42 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,8 +29,24 @@ ECHO = echo -e
 
 all: $(NAME)
 
-$(NAME): 
-	@echo "let there be light!"
+$(NAME): create-mariadb-ssl create-ngingx-ssl get-dotenv
+	@$(ECHO) "$(call log_msg,Setup done! Now type \"make run\" to start the show!)"
+
+create-mariadb-ssl:
+	@$(ECHO) "$(call log_msg,Creating SSL certs for mariadb...)"
+	cd srcs/requirements/mariadb/ssl && ./gen_certs.sh
+
+create-ngingx-ssl:
+	@$(ECHO) "$(call log_msg,Creating SSL certs for nginx...)"
+	cd srcs/requirements/nginx/conf && ../tools/create_selfsigned_cert.sh
+
+get-dotenv:
+	@$(ECHO) "$(call log_msg,Copying in .env from elsewhere...)"
+	cp ~/inception-dotenv srcs/.env
+
+touch-flagfile:
+	@$(ECHO) "$(call log_msg,Wow! Finished Setup for first time. Creating flagfile.)"
+	touch .flagfile
 
 nginx:
 	docker build -t inception_nginx ./srcs/requirements/nginx/
@@ -79,5 +95,6 @@ clean:
 	sudo rm -rf wp_data wp_db && mkdir wp_data wp_db
 	-docker rm -f $$(docker ps -qa)
 	-docker volume rm $$(docker volume ls -q)
+	rm .flagfile
 
-.PHONY: $(NAME) all nginx nginx-run play db-run db
+.PHONY: $(NAME) all nginx nginx-run play db-run db touch-flagfile create-mariadb-ssl create-ngingx-ssl get-dotenv

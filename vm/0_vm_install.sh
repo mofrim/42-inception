@@ -2,6 +2,18 @@
 
 nixos_image="latest-nixos-minimal-x86_64-linux.iso"
 
+# first patch the vm-conf.nix with fmaurer@42's uid:
+if [ ! -e ./vm-conf.nix ]; then
+	echo ">> ERROR: ./vm-conf.nix not found! <<"
+	exit 1
+fi
+if [ -n "$(grep "uid = 42" ./vm-conf.nix)" ]; then
+	echo ">> patching vm-conf.nix with current uid <<"
+	sed -i "s/uid = 42;/uid = $(id -u);/" ./vm-conf.nix
+else
+	echo ">> patching vm-conf.nix is already done. <<"
+fi
+
 if [ ! -e $nixos_image ]; then
 	echo ">> nixos-iso not found. downloading! <<"
 	wget https://channels.nixos.org/nixos-25.05/$nixos_image
