@@ -126,7 +126,7 @@ in
       packages = with pkgs; [
         vim
         gnumake
-        firefox
+        brave
         foot
       ];
       shellAliases = {
