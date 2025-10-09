@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# generating the client and server certs for mariadb and wp here
+
 DAYS=365000
 COUNTRY="US"
 STATE="42"
@@ -19,7 +21,7 @@ openssl req -new -x509 -nodes -days $DAYS \
   -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_CA"
 
 echo "Generating server certificate..."
-openssl req -newkey rsa:2048 -days $DAYS -nodes \
+openssl req -newkey rsa:2048 -nodes \
   -keyout server-key.pem \
   -out server-req.pem \
   -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_SERVER"
@@ -33,7 +35,7 @@ openssl x509 -req -in server-req.pem -days $DAYS \
   -out server-cert.pem
 
 echo "Generating client certificate..."
-openssl req -newkey rsa:2048 -days $DAYS -nodes \
+openssl req -newkey rsa:2048 -nodes \
   -keyout client-key.pem \
   -out client-req.pem \
   -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_CLIENT"
