@@ -4,6 +4,7 @@
 secrets
 play
 wp_data/
+wp_db/
 **/*.pem
 **/*.key
 **/*.qcow2
