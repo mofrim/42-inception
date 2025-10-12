@@ -12,35 +12,36 @@ CN_CA="FMaurerCA"
 CN_SERVER="db"
 CN_CLIENT="wp"
 
-echo "Generating CA key and certificate..."
-openssl genrsa 4096 > ca-key.pem
+function logmsg () {
+  echo -e "[ gen_mariadb_wp_certs ] $1"
+}
 
-openssl req -new -x509 -nodes -days $DAYS \
-  -key ca-key.pem \
-  -out ca-cert.pem \
-  -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_CA"
+if [[ ! -e ./ca-key.pem || ! -e ./ca-cert.pem ]]; then
+  logmsg "ERROR: CA certificate has to be created first!"
+  exit 1
+fi
 
-echo "Generating server certificate..."
+logmsg "Generating server certificate..."
+
+# create key and signing request
 openssl req -newkey rsa:2048 -nodes \
   -keyout server-key.pem \
   -out server-req.pem \
   -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_SERVER"
 
-openssl rsa -in server-key.pem -out server-key.pem
-
+# generate signed cert with the CSR (cert signing request)
 openssl x509 -req -in server-req.pem -days $DAYS \
   -CA ca-cert.pem \
   -CAkey ca-key.pem \
   -set_serial 01 \
   -out server-cert.pem
 
-echo "Generating client certificate..."
+logmsg "Generating client certificate..."
+
 openssl req -newkey rsa:2048 -nodes \
   -keyout client-key.pem \
   -out client-req.pem \
   -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_CLIENT"
-
-openssl rsa -in client-key.pem -out client-key.pem
 
 openssl x509 -req -in client-req.pem -days $DAYS \
   -CA ca-cert.pem \
@@ -49,12 +50,13 @@ openssl x509 -req -in client-req.pem -days $DAYS \
   -out client-cert.pem
 
 echo
-echo "Verifying certificates..."
+logmsg "Verifying certificates..."
 echo
 
 openssl verify -CAfile ca-cert.pem server-cert.pem client-cert.pem
 
 echo
-echo "Certificate generation complete!"
+logmsg "Certificate generation complete!"
 
+# remove singing request files
 rm *-req.pem
