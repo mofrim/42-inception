@@ -16,3 +16,4 @@ vm-archive/nix-approach/stupid-approach/vm/kernel
 .setup_done
 vm/inception-vmpw
 vm/vm-conf.nix
+vm/inception/
