@@ -12,3 +12,7 @@ wp_db/
 **/*.iso
 vm-archive/nix-approach/stupid-approach/vm/initrd
 vm-archive/nix-approach/stupid-approach/vm/kernel
+.sec_setup_done
+.setup_done
+vm/inception-vmpw
+vm/vm-conf.nix
