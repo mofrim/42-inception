@@ -19,8 +19,8 @@ sed "s/uid = 42;/uid = $(id -u);/" ./vm-conf-template.nix > ./vm-conf.nix
 # now patching in the real passwords, re-using my escape_sed function
 if [ ! -e ./inception-vmpw ]; then
   logmsg -e "could not find inception-vmpw. copy it to vm/ dir!"
+fi
 sed -i "s|PW_GOES_HERE|$(escape_sed "$(cat ./inception-vmpw)")|" ./vm-conf.nix
-
 
 if [ ! -e $nixos_image ]; then
 	logmsg "nixos-iso not found. downloading!"
@@ -32,7 +32,11 @@ if [ ! -e ./nixos.qcow2 ]; then
 	qemu-img create -f qcow2 nixos.qcow2 15G
 fi
 
-logmsg "launching vm!"
+logmsg "launching vm..."
+echo
+logmsg "here is you todo-list for the vm:"
+print_cmds_green ./1_nix_setup.sh
+echo
 
 qemu-system-x86_64 \
   -enable-kvm \
@@ -43,5 +47,7 @@ qemu-system-x86_64 \
   -drive file=nixos.qcow2,format=qcow2 \
 	-device e1000,netdev=net0 \
 	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22
+
+logmsg "Alrighty! Done installing & setting up the our VM!"
 
 ## now ssh into the vm and setup the system...

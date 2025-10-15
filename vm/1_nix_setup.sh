@@ -1,7 +1,5 @@
-#!/usr/bin/env bash
-
-## (1) the only thing that needs to be done in vm window:
-passwd root # -> set simple pw
+## (1) the only thing to be done in vm window: set a very simple pw for root
+sudo passwd root
 
 ## (2) ssh to vm
 ssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -o StrictHostKeyChecking=no -p 5555 root@localhost
