@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/15 16:23:42 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/15 16:56:27 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,13 +25,14 @@ RST = \e[0m
 MSGOPN = $(YLW)--(($(GRN)
 MSGEND = $(YLW)))--$(RST)
 
-# this is really a makefile function defn !!! not exactly necessary but fancy.
-# FIXME: rename colr_grey and reset_colr function consistently
+# lomsg makefile functions
 log_msg_start = @$(ECHO) "\n$(MSGOPN) $(1) $(MSGEND)"
 log_msg_mid = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)"
 log_msg_end = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)\n"
-colr_grey = @$(ECHON) "$(GRE)"
-reset_colr =  @$(ECHON) "$(RST)"
+
+# output coloring
+output_color_grey = @$(ECHON) "$(GRE)"
+output_colr_reset =  @$(ECHON) "$(RST)"
 
 # WoooOOooOOoOoow! Make. supports. setting. environment variables. for. all.
 # subshells. woohoo.
@@ -43,6 +44,7 @@ export TOOLDIR = $(shell readlink -f ./tools)
 ECHO = echo -e
 ECHON = echo -en
 
+# to be clear here.
 DOCKER = docker
 
 REQ_DIR	=	src/requirements
@@ -50,6 +52,7 @@ WP_DIR	=	$(REQ_DIR)/wordpress
 MARIA_DIR	=	$(REQ_DIR)/mariadb
 NGINX_DIR	=	$(REQ_DIR)/nginx
 
+# files bringing the secrets from the outside.
 INCEPTION_DOTENV = src/.env
 INCEPTION_VMPW = vm/inception-vmpw
 
@@ -64,16 +67,16 @@ setup: .setup_done
 .setup_done:
 	$(call log_msg_start,Alrighty! Running for the first time. Doing setup...)
 	@sleep 1
-	$(colr_grey)
+	$(output_color_grey)
 	@$(MAKE) -s sec-setup
 	@$(MAKE) -s dotenv
 	@touch .setup_done && chmod 100 .setup_done
 
 $(INCEPTION_DOTENV):
 	$(call log_msg_start,Copying in .env from elsewhere...)
-	$(colr_grey)
+	$(output_color_grey)
 	@tools/setup_dotenv_vmpw.sh
-	$(reset_colr)
+	$(output_colr_reset)
 	$(call log_msg_end,Done!)
 
 $(INCEPTION_VMPW): $(INCEPTION_DOTENV)
@@ -87,27 +90,27 @@ ifeq ($(shell tools/check_sec.sh),ok)
 	$(call log_msg_end,Secret setup already done. Skipping.)
 else
 	$(call log_msg_start,Setting up secrets...)
-	$(colr_grey)
+	$(output_color_grey)
 	@$(MAKE) -s sec-ca
 	@sleep 0.5
 	@$(MAKE) -s sec-maria-wp
 	@sleep 0.5
 	@$(MAKE) -s sec-nginx
 	@sleep 0.5
-	$(reset_colr)
+	$(output_colr_reset)
 	$(call log_msg_end,Done setting up secrets.)
 endif
 
 sec-ca:
 	$(call log_msg_start,Creating the CA cert...)
-	$(colr_grey)
+	$(output_color_grey)
 	cd secrets && ../tools/gen_ca_cert.sh
-	$(reset_colr)
+	$(output_colr_reset)
 	$(call log_msg_end,Done with CA Cert!)
 
 sec-maria-wp:
 	$(call log_msg_start,Creating SSL certs for mariadb...)
-	$(colr_grey)
+	$(output_color_grey)
 	cd secrets && ../tools/gen_mariadb_wp_certs.sh
 	mkdir -p $(WP_DIR)/mysql $(MARIA_DIR)/ssl
 	mv secrets/client-*.pem $(WP_DIR)/mysql
@@ -118,7 +121,7 @@ sec-maria-wp:
 
 sec-nginx:
 	$(call log_msg_start,Creating SSL Certs for nginx...)
-	$(colr_grey)
+	$(output_color_grey)
 	cd secrets && ../tools/gen_nginx_cert.sh
 	mkdir -p $(NGINX_DIR)/conf
 	mv secrets/nginx-server-cert.pem $(NGINX_DIR)/conf/server-cert.pem
@@ -139,6 +142,7 @@ dev: setup
 
 run: setup
 	$(call log_msg_start,Now really going for it... Starting vm_setup!)
+	cd vm && ./0_vm_install.sh
 
 #### Direct docker stuff ####
 
@@ -186,14 +190,14 @@ logs:
 	sudo cat ./wp_db/$$( $(DOCKER) logs inc_wp_db | grep Logging | sed -e "s/^.*'\/var\/lib\/mysql\///g" -e "s/'.$$//g")
 
 sec-clean:
-	$(colr_grey)
+	$(output_color_grey)
 	rm -f $(WP_DIR)/mysql/*.pem
 	rm -f $(MARIA_DIR)/ssl/*.pem
 	rm -f $(NGINX_DIR)/conf/*.pem
 
 clean:
 	$(call log_msg_start,Cleaning runtime docker stuff...)
-	$(colr_grey)
+	$(output_color_grey)
 	sudo rm -rf wp_data wp_db && mkdir wp_data wp_db
 	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
 	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
