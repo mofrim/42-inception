@@ -31,7 +31,7 @@ in
     users.root.hashedPassword = "$y$j9T$kSHZPi5yj71KzIHRera.H/$vxhVbUHlmxqvLNPuntsR.gv1tUBB42f06ZngiqAGaR7";
     users.fmaurer = {
       isNormalUser = true;
-      uid = 102215;
+      uid = 1000;
       openssh.authorizedKeys.keys = [
        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFG0nJF3ZMmkgkSAG42VOUyN65w0wSEPeZ+229UiZqW1 fmaurer@42" 
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlhRzDpd+8nwaDMnAeXjpyM/M0RhCA7LYZCEFKHWYI7 mofrim@posteo.de"

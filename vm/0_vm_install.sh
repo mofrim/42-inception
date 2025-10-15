@@ -2,17 +2,21 @@
 
 nixos_image="latest-nixos-minimal-x86_64-linux.iso"
 
-# first patch the vm-conf.nix with fmaurer@42's uid:
-if [ ! -e ./vm-conf.nix ]; then
-	echo ">> ERROR: ./vm-conf.nix not found! <<"
+# first patch the vm-conf.nix with current users UID because we want to have
+# full permissions on inception dir in VM
+if [ ! -e ./vm-conf-template.nix ]; then
+	echo ">> ERROR: ./vm-conf-template.nix not found! <<"
 	exit 1
 fi
-if [ -n "$(grep "uid = 42" ./vm-conf.nix)" ]; then
-	echo ">> patching vm-conf.nix with current uid <<"
-	sed -i "s/uid = 42;/uid = $(id -u);/" ./vm-conf.nix
-else
-	echo ">> patching vm-conf.nix is already done. <<"
-fi
+
+echo ">> patching vm-conf.nix with current UID & PWs <<"
+sed "s/uid = 42;/uid = $(id -u);/" ./vm-conf-template.nix > ./vm-conf.nix
+
+# now patching in the real passwords, re-using my escape_sed function
+function escape_sed() {
+  echo "$1" | sed 's/[][}{}^/()$&.*+?|]/\\&/g'
+}
+sed -i "s|PW_GOES_HERE|$(escape_sed "$(cat ./inception_vm_pw)")|" ./vm-conf.nix
 
 if [ ! -e $nixos_image ]; then
 	echo ">> nixos-iso not found. downloading! <<"

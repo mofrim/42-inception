@@ -6,9 +6,11 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/12 14:53:11 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/14 16:25:02 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+# overall TODO: cleanup this mess!
 
 NAME = inception
 
@@ -24,14 +26,18 @@ MSGOPN = $(YLW)--(($(GRN)
 MSGEND = $(YLW)))--$(RST)
 
 # this is really a makefile function defn !!! not exactly necessary but fancy.
-log_msg = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)"
-colr_grey = @$(ECHO) "$(GRE)"
-reset_colr =  @$(ECHO) "$(RST)"
+# FIXME: rename colr_grey and reset_colr function consistently
+log_msg_start = @$(ECHO) "\n$(MSGOPN) $(1) $(MSGEND)"
+log_msg_mid = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)"
+log_msg_end = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)\n"
+colr_grey = @$(ECHON) "$(GRE)"
+reset_colr =  @$(ECHON) "$(RST)"
 
 # Control preproc consts in constants.h based on build host:
 # TODO: choose this value depending on system, cause on school PCs `-e` does
 # not have an effect.
 ECHO = echo -e
+ECHON = echo -en
 
 DOCKER = docker
 
@@ -40,61 +46,93 @@ WP_DIR	=	$(REQ_DIR)/wordpress
 MARIA_DIR	=	$(REQ_DIR)/mariadb
 NGINX_DIR	=	$(REQ_DIR)/nginx
 
+INCEPTION_DOTENV = src/.env
+
 all: $(NAME)
 
-# TODO: do not re-create keys and certs if they already exist. meaning check for
-# relevant files AND if they are not empty -> create a script which does that.
-# Also include copying the dotenv file into src dir. Of course, before doing
-# this check if there is already a non-empty src/.env!
-$(NAME): mksec
-	$(call log_msg,Setup done! Now type \"make run\" or \"make test\" to start the show!)
+$(NAME): setup
+	$(call log_msg_end,Setup done! Now type \"make run\" or \"make dev\" to start the show!)
 
-dev:
-	$(call log_msg,Okay calling docker compose up directly!)
-	$(call log_msg,But first: checking if fmaurer.42.fr is reachable...)
+dotenv: $(INCEPTION_DOTENV)
+$(INCEPTION_DOTENV):
+	$(call log_msg_start,Copying in .env from elsewhere...)
+	$(colr_grey)
+	@tools/setup_dotenv.sh
+	$(reset_colr)
+	$(call log_msg_end,Done!)
+
+dev: setup
+	$(call log_msg_start,Okay calling docker compose up directly!)
+	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
 ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
-	$(call log_msg,Not doing it. fmaurer.42.fr needs to be pingable)
+	$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
 else
-	$(call log_msg,Alrighty! Running docker compose up!)
+	$(call log_msg_end,Alrighty! Running docker compose up!)
 	cd src && docker compose up --build
 endif
 
-mksec: mksec-ca mksec-maria-wp mksec-nginx
 
-mksec-ca:
-	$(call log_msg,Creating the CA cert...)
+# real-file target for ensuring make will only run once
+.setup_done:
+	$(call log_msg_start,Alrighty! Running for the first time. Doing setup...)
+	@sleep 1
+	$(colr_grey)
+	@$(MAKE) -s sec-setup
+	@$(MAKE) -s dotenv
+	@touch .setup_done && chmod 100 .setup_done
+
+setup: .setup_done
+
+sec-setup:
+ifeq ($(shell tools/check_sec.sh),ok)
+	$(call log_msg_end,Secret setup already done. Skipping.)
+else
+	$(call log_msg_start,Setting up secrets...)
+	$(colr_grey)
+	@$(MAKE) -s sec-ca
+	@sleep 0.5
+	@$(MAKE) -s sec-maria-wp
+	@sleep 0.5
+	@$(MAKE) -s sec-nginx
+	@sleep 0.5
+	$(reset_colr)
+	$(call log_msg_end,Done setting up secrets.)
+endif
+
+sec-ca:
+	$(call log_msg_start,Creating the CA cert...)
 	$(colr_grey)
 	cd secrets && ../tools/gen_ca_cert.sh
-	$(reset)
-	$(call log_msg,Done CA Cert!)
+	$(reset_colr)
+	$(call log_msg_end,Done with CA Cert!)
 
-mksec-maria-wp:
-	$(call log_msg,Creating SSL certs for mariadb...)
-	$(make_it_grey)
+sec-maria-wp:
+	$(call log_msg_start,Creating SSL certs for mariadb...)
+	$(colr_grey)
 	cd secrets && ../tools/gen_mariadb_wp_certs.sh
 	mkdir -p $(WP_DIR)/mysql $(MARIA_DIR)/ssl
 	mv secrets/client-*.pem $(WP_DIR)/mysql
 	cp secrets/ca-cert.pem $(WP_DIR)/mysql
 	cp secrets/ca-cert.pem $(MARIA_DIR)/ssl
 	mv secrets/server-*.pem $(MARIA_DIR)/ssl
-	$(reset)
-	$(call log_msg,Done Creating SSL certs for mariadb!)
+	$(call log_msg_end,Done Creating SSL certs for mariadb!)
 
-mksec-nginx:
-	$(call log_msg,Creating SSL Certs for nginx...)
+sec-nginx:
+	$(call log_msg_start,Creating SSL Certs for nginx...)
+	$(colr_grey)
 	cd secrets && ../tools/gen_nginx_cert.sh
 	mkdir -p $(NGINX_DIR)/conf
 	mv secrets/nginx-server-cert.pem $(NGINX_DIR)/conf/server-cert.pem
 	mv secrets/nginx-server-key.pem $(NGINX_DIR)/conf/server-key.pem
-	$(call log_msg,Done creating SSL Certs for nginx!)
+	$(call log_msg_end,Done creating SSL Certs for nginx!)
 
-get-dotenv:
-	"$(call log_msg,Copying in .env from elsewhere...)
-	cp ~/inception-dotenv src/.env
 
-touch-flagfile:
-	$(call log_msg,Wow! Finished Setup for first time. Creating flagfile.)
-	touch .flagfile
+#### VM hot stuff ####
+
+run: setup
+	$(call log_msg_start,Now really going for it... Starting vm_setup!)
+
+#### Direct docker stuff ####
 
 nginx:
 	$(DOCKER) build -t inception_nginx $(REQ_DIR)/nginx/
@@ -130,24 +168,37 @@ comp-down:
 comp-re: clean comp
 
 logs:
-	$(call log_msg,nginx logs...)
+	$(call log_msg_start,nginx logs...)
 	-$(DOCKER) exec -it inc_nginx cat '/var/log/nginx/error.log'
 	-$(DOCKER) exec -it inc_nginx cat '/var/log/nginx/access.log'
-	$(call log_msg,wp logs...)
+	$(call log_msg_mid,wp logs...)
 	-$(DOCKER) exec -it inc_wp cat '/var/log/php84/error.log'
-	$(call log_msg,wp_db logs...)
+	$(call log_msg_mid,wp_db logs...)
 	-$(DOCKER) logs inc_wp_db
 	sudo cat ./wp_db/$$( $(DOCKER) logs inc_wp_db | grep Logging | sed -e "s/^.*'\/var\/lib\/mysql\///g" -e "s/'.$$//g")
 
 sec-clean:
+	$(colr_grey)
 	rm -f $(WP_DIR)/mysql/*.pem
 	rm -f $(MARIA_DIR)/ssl/*.pem
 	rm -f $(NGINX_DIR)/conf/*.pem
 
 clean:
+	$(call log_msg_start,Cleaning runtime docker stuff...)
+	$(colr_grey)
 	sudo rm -rf wp_data wp_db && mkdir wp_data wp_db
 	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
 	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
-	rm .flagfile
+	$(call log_msg_end,Done.)
 
-.PHONY: $(NAME) all nginx nginx-run play db-run db mksec-maria-wp
+fclean:
+	$(call log_msg_start, Cleaning up hard...)
+	@$(MAKE) -s clean
+	@$(MAKE) -s sec-clean
+	$(call log_msg_mid,Removing setup lockfile...)
+	rm -f .setup_done
+	$(call log_msg_end, Cleaning up hard... is done!)
+
+re: fclean all
+
+.PHONY: $(NAME) all nginx nginx-run play db-run db sec sec-ca sec-maria-wp sec-nginx dotenv dev sec-setup setup

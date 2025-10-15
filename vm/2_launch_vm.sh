@@ -11,8 +11,7 @@ qemu-system-x86_64 \
 	-device e1000,netdev=net0 \
 	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22
 
+# ssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost
+
 ## manual mounting the shared folder:
 # sudo mount -t 9p -o trans=virtio,msize=524288 tag_name /mount/point/on/guest
-
-# or copy files over via rsync:
-# rsync -vaz ./bla.tar.gz -e "ssh -p 5555" fmaurer@localhost:~/
