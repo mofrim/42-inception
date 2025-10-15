@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -e
+source $TOOLDIR/tools_include.sh
+
 DAYS=365000
 COUNTRY="DE"
 STATE="42"
@@ -9,12 +12,8 @@ OU="IT"
 CN_CA="FMaurerCA"
 CN_SERVER="fmaurer.42.fr"
 
-function logmsg () {
-  echo -e "[ gen_nginx_cert ] $1"
-}
-
 if [[ ! -e ./ca-key.pem || ! -e ./ca-cert.pem ]]; then
-  logmsg "ERROR: CA certificate has to be created first!"
+  logmsg -e "ERROR: CA certificate has to be created first!"
   exit 1
 fi
 

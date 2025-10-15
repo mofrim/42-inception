@@ -2,6 +2,9 @@
 
 # generating the client and server certs for mariadb and wp here
 
+set -e
+source $TOOLDIR/tools_include.sh
+
 DAYS=365000
 COUNTRY="US"
 STATE="42"
@@ -12,12 +15,8 @@ CN_CA="FMaurerCA"
 CN_SERVER="db"
 CN_CLIENT="wp"
 
-function logmsg () {
-  echo -e "[ gen_mariadb_wp_certs ] $1"
-}
-
 if [[ ! -e ./ca-key.pem || ! -e ./ca-cert.pem ]]; then
-  logmsg "ERROR: CA certificate has to be created first!"
+  logmsg -e "ERROR: CA certificate has to be created first!"
   exit 1
 fi
 

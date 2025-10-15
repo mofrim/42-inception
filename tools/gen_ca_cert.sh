@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -e
+source $TOOLDIR/tools_include.sh
+
 DAYS=365000
 COUNTRY="DE"
 STATE="42"
@@ -10,11 +13,8 @@ CN_CA="FMaurerCA"
 CN_SERVER="db"
 CN_CLIENT="wp"
 
-function logmsg () {
-  echo -e "[ gen_ca_cert ] $1"
-}
-
 logmsg "Generating CA key and certificate..."
+
 openssl genrsa 4096 > ca-key.pem
 
 openssl req -new -x509 -nodes -days $DAYS \

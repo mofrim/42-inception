@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/14 16:25:02 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/15 16:23:42 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@
 NAME = inception
 
 # some colors for the log msgs
-# GRN = \033[1;92m
+# GRN = \e[1;92m
 GRN = \e[0;32m
 RED = \e[1;31m
 WHT = \e[1;37m
@@ -33,6 +33,10 @@ log_msg_end = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)\n"
 colr_grey = @$(ECHON) "$(GRE)"
 reset_colr =  @$(ECHON) "$(RST)"
 
+# WoooOOooOOoOoow! Make. supports. setting. environment variables. for. all.
+# subshells. woohoo.
+export TOOLDIR = $(shell readlink -f ./tools)
+
 # Control preproc consts in constants.h based on build host:
 # TODO: choose this value depending on system, cause on school PCs `-e` does
 # not have an effect.
@@ -47,30 +51,14 @@ MARIA_DIR	=	$(REQ_DIR)/mariadb
 NGINX_DIR	=	$(REQ_DIR)/nginx
 
 INCEPTION_DOTENV = src/.env
+INCEPTION_VMPW = vm/inception-vmpw
 
 all: $(NAME)
 
 $(NAME): setup
 	$(call log_msg_end,Setup done! Now type \"make run\" or \"make dev\" to start the show!)
 
-dotenv: $(INCEPTION_DOTENV)
-$(INCEPTION_DOTENV):
-	$(call log_msg_start,Copying in .env from elsewhere...)
-	$(colr_grey)
-	@tools/setup_dotenv.sh
-	$(reset_colr)
-	$(call log_msg_end,Done!)
-
-dev: setup
-	$(call log_msg_start,Okay calling docker compose up directly!)
-	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
-ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
-	$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
-else
-	$(call log_msg_end,Alrighty! Running docker compose up!)
-	cd src && docker compose up --build
-endif
-
+setup: .setup_done
 
 # real-file target for ensuring make will only run once
 .setup_done:
@@ -81,8 +69,19 @@ endif
 	@$(MAKE) -s dotenv
 	@touch .setup_done && chmod 100 .setup_done
 
-setup: .setup_done
+$(INCEPTION_DOTENV):
+	$(call log_msg_start,Copying in .env from elsewhere...)
+	$(colr_grey)
+	@tools/setup_dotenv_vmpw.sh
+	$(reset_colr)
+	$(call log_msg_end,Done!)
 
+$(INCEPTION_VMPW): $(INCEPTION_DOTENV)
+
+dotenv-vmpw: $(INCEPTION_DOTENV) $(INCEPTION_VMPW)
+
+# INSIGHT: wow! this is really crappy! the ifeq (...) statement will be
+# evaluated _anytime_ make is called with some other rule!
 sec-setup:
 ifeq ($(shell tools/check_sec.sh),ok)
 	$(call log_msg_end,Secret setup already done. Skipping.)
@@ -126,6 +125,15 @@ sec-nginx:
 	mv secrets/nginx-server-key.pem $(NGINX_DIR)/conf/server-key.pem
 	$(call log_msg_end,Done creating SSL Certs for nginx!)
 
+dev: setup
+	$(call log_msg_start,Okay calling docker compose up directly!)
+	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
+	ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
+		$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
+	else
+		$(call log_msg_end,Alrighty! Running docker compose up!)
+		cd src && docker compose up --build
+	endif
 
 #### VM hot stuff ####
 
@@ -197,8 +205,10 @@ fclean:
 	@$(MAKE) -s sec-clean
 	$(call log_msg_mid,Removing setup lockfile...)
 	rm -f .setup_done
+	$(call log_msg_mid,Even removing .env an vmpw files...)
+	rm -f src/.env vm/inception-vmpw
 	$(call log_msg_end, Cleaning up hard... is done!)
 
 re: fclean all
 
-.PHONY: $(NAME) all nginx nginx-run play db-run db sec sec-ca sec-maria-wp sec-nginx dotenv dev sec-setup setup
+.PHONY: $(NAME) all nginx nginx-run play db-run db sec sec-ca sec-maria-wp sec-nginx dotenv-vmpw dev sec-setup setup test
