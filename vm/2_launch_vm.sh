@@ -5,7 +5,20 @@ source $TOOLDIR/tools_include.sh
 
 SHARED_DIR="./inception"
 
-if ask_yes_no "do you want to launch the vm?" "y"; then
+# check if all inception files from src have been copied to dir shared with the
+# VM. if not: do it.
+if [[ ( ! -e $SHARED_DIR/requirements || ! -e $SHARED_DIR/docker-compose.yml ) \
+  && -e ../src ]]
+then
+  logmsg "copying inception to vm-shared dir"
+  rm -rf $SHARED_DIR/* && rm -f $SHARED_DIR/.env
+  cp -R ../src/{*,.*} $SHARED_DIR
+fi
+
+if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
+  logmsg "launching the vm!"
+  logmsg "for ssh acces run:"
+  echo -e "\e[32mssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost\e[0m"
   qemu-system-x86_64 \
     -enable-kvm \
     -smp 2 \
