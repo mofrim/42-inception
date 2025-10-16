@@ -17,7 +17,7 @@ in
     xorg.xorgserver
     xorg.xinit
     xorg.xinput
-    xorg.xauth
+    # xorg.xauth
     xorg.setxkbmap
     xorg.xf86inputevdev
     fluxbox
@@ -154,11 +154,18 @@ in
     programs = {
       bash = {
         enable = true;
+        # FIXME: startx should not be started on ssh login!
         profileExtra = ''
           # ln -sf /tmp/shared /home/fmaurer/inception
           mkdir -p /home/fmaurer/data/wp_{data,db}
           cd /home/fmaurer/inception
-          startx /etc/xinitrc-fluxbox
+          if [ -z "$(pidof xinit)" ]; then
+            startx /etc/xinitrc-fluxbox
+          fi
+        '';
+        bashrcExtra = ''
+          echo "- run 'make' to start the inception circus"
+          echo "- run 'ciao' to shutdown vm"
         '';
       };
     };

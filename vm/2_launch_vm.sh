@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
+
 set -e
 source $TOOLDIR/tools_include.sh
+
+if [ -n "$VM_INSTALL_SHELL" ];then
+  logmsg "still in VM_INSTALL_SHELL. plz hit ctrl-d to escape from shell-hell."
+  exit
+fi
+
+if [[ "${PWD##*/}" != "vm"  ]];then
+  logmsg -e "script can only be run from vm-dir."
+  exit
+fi
 
 SHARED_DIR="./inception"
 
@@ -20,8 +31,7 @@ sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' $SHARED_DIR/.env
 
 if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
   logmsg "launching the vm!"
-  logmsg "for ssh acces run:"
-  echo -e "\e[32mssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost\e[0m"
+
   qemu-system-x86_64 \
     -enable-kvm \
     -smp 2 \
@@ -29,12 +39,18 @@ if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
     -drive file=nixos.qcow2,format=qcow2 \
     -virtfs local,path="${SHARED_DIR}",security_model=none,mount_tag=shared \
     -device e1000,netdev=net0 \
-    -netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22
+    -netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
+
+  logmsg "for ssh acces run:"
+  echo -e "\e[32mssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost\e[0m"
+  logmsg "...or simply 'ssh_to_vm' ;)"
+  logmsg "PID of the VM if something goes wrong: $! (or simply run 'killvm')"
+  export INCEPTION_VM_PID=$!
+  VM_RUN_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
+  unset VM_RUN_SHELL
 else
   logmsg "okay, maybe next time."
 fi
-
-# ssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost
 
 ## manual mounting the shared folder:
 # sudo mount -t 9p -o trans=virtio,msize=524288 tag_name /mount/point/on/guest

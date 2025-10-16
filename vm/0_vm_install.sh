@@ -12,6 +12,11 @@ if [ ! -e ./vm-conf-template.nix ]; then
 	exit 1
 fi
 
+if [[ "${PWD##*/}" != "vm"  ]];then
+  logmsg -e "script can only be run from vm-dir."
+  exit
+fi
+
 logmsg "patching vm-conf.nix with current UID & PWs"
 
 sed "s/uid = 42;/uid = $(id -u);/" ./vm-conf-template.nix > ./vm-conf.nix
@@ -33,10 +38,6 @@ if [ ! -e ./nixos.qcow2 ]; then
 fi
 
 logmsg "launching vm..."
-echo
-logmsg "here is you todo-list for the vm:"
-print_cmds_green ./1_nix_setup.sh
-echo
 
 qemu-system-x86_64 \
   -enable-kvm \
@@ -46,7 +47,18 @@ qemu-system-x86_64 \
   -cdrom ./$nixos_image \
   -drive file=nixos.qcow2,format=qcow2 \
 	-device e1000,netdev=net0 \
-	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22
+	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
+
+# did not find another way than running a new shell until the vm is completely
+# set up.
+sleep 0.5
+clear
+logmsg "here is you todo-list for the vm:"
+print_cmds_green ./1_nix_setup.sh
+logmsg "PID of the VM if something goes wrong: $! (or simply run 'killvm')"
+export INCEPTION_VM_PID=$!
+VM_INSTALL_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
+unset VM_INSTALL_SHELL
 
 logmsg "Alrighty! Done installing & setting up the our VM!"
 

@@ -1,5 +1,16 @@
 # vim: ft=bash
 
+# wrapped color-escape sequences... needed for readline to get the prompt prefix
+# length right.
+RED='\[\e[31m\]'
+GREEN='\[\e[32m\]'
+BLUE='\[\e[34m\]'
+CYAN='\[\e[36m\]'
+BRCYAN='\[\e[1;96m\]'
+GRAY='\[\e[37m\]'
+RESET='\[\e[0m\]'
+
+
 function shorten_path() {
   local path_level=$(pwd | sed 's/[^\/]//g' | wc -c)
   if [ $path_level -gt 3 ]; then
@@ -9,11 +20,24 @@ function shorten_path() {
   fi
 }
 
-echo
-echo -e '\e[1;96m((( Welcome to the inception-env! )))\e[0m'
-echo
-
 export INCEPTION_SHELL="ok"
 export TOOLDIR="$inception_root/tools"
 
-export PS1='(\e[32m\u\e[1;33m@\e[34minception\e[0m) \e[37m$(shorten_path \w)::\e[0m '
+if [[ -z $VM_INSTALL_SHELL && -z $VM_RUN_SHELL ]]; then
+  echo
+  echo -e '\e[1;96m((( Welcome to the inception-env! )))\e[0m'
+  echo
+  export PS1="(${GREEN}\u${CYAN}@${BLUE}inception${RESET}) ${GRAY}\$(shorten_path \w)::${RESET} "
+elif [ -n "$VM_RUN_SHELL" ]; then
+  alias killvm='kill $INCEPTION_VM_PID'
+  alias ssh_to_vm='ssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -q -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost'
+  echo -e '\e[1;96m((( vm-run-env: press ctrl-d when finished! )))\e[0m'
+  export PS1="(${GREEN}\u${CYAN}@${BLUE}inception${RED}RunVM${RESET}) ${GRAY}::${RESET} "
+else
+  alias killvm='kill $INCEPTION_VM_PID'
+  alias ssh_to_vm='ssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -q -o StrictHostKeyChecking=no -p 5555 root@localhost'
+  alias setup_vm_system='./0a_setup_vm_system.sh'
+  echo -e '\e[1;96m((( vm-install-env: press ctrl-d when finished! )))\e[0m'
+  export PS1="(${GREEN}\u${CYAN}@${BLUE}inception${RED}InstallVM${RESET}) ${GRAY}::${RESET} "
+fi
+
