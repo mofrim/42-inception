@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/15 16:56:27 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/16 09:04:33 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ MSGEND = $(YLW)))--$(RST)
 log_msg_start = @$(ECHO) "\n$(MSGOPN) $(1) $(MSGEND)"
 log_msg_mid = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)"
 log_msg_end = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)\n"
+log_msg_single = @$(ECHO) "\n$(MSGOPN) $(1) $(MSGEND)\n"
 
 # output coloring
 output_color_grey = @$(ECHON) "$(GRE)"
@@ -59,18 +60,22 @@ INCEPTION_VMPW = vm/inception-vmpw
 all: $(NAME)
 
 $(NAME): setup
-	$(call log_msg_end,Setup done! Now type \"make run\" or \"make dev\" to start the show!)
+	$(call log_msg_single,Setup done! Now type \"make run\" or \"make dev\" to start the show!)
 
 setup: .setup_done
 
 # real-file target for ensuring make will only run once
 .setup_done:
+ifneq ($(INCEPTION_SHELL),ok)
+	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
+else
 	$(call log_msg_start,Alrighty! Running for the first time. Doing setup...)
-	@sleep 1
+	@sleep 0.5
 	$(output_color_grey)
 	@$(MAKE) -s sec-setup
-	@$(MAKE) -s dotenv
+	@$(MAKE) -s dotenv-vmpw
 	@touch .setup_done && chmod 100 .setup_done
+endif
 
 $(INCEPTION_DOTENV):
 	$(call log_msg_start,Copying in .env from elsewhere...)
@@ -131,18 +136,22 @@ sec-nginx:
 dev: setup
 	$(call log_msg_start,Okay calling docker compose up directly!)
 	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
-	ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
-		$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
-	else
-		$(call log_msg_end,Alrighty! Running docker compose up!)
-		cd src && docker compose up --build
-	endif
+ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
+	$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
+else
+	$(call log_msg_mid,Alrighty! Running docker compose up!)
+	cd src && docker compose up --build
+endif
 
 #### VM hot stuff ####
 
 run: setup
+ifneq ($(INCEPTION_SHELL),ok)
+	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
+else
 	$(call log_msg_start,Now really going for it... Starting vm_setup!)
 	cd vm && ./0_vm_install.sh
+endif
 
 #### Direct docker stuff ####
 
