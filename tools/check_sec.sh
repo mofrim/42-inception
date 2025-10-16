@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -z "$INCEPTION_SHELL" ];then
+  echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
+  exit 1
+fi
+
 #### check if all necessary keys and certs are there _and_ not empty ####
 
 set -e

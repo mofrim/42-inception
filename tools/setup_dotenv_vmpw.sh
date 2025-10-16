@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 
+if [ -z "$INCEPTION_SHELL" ];then
+  echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
+  exit 1
+fi
+
 set -e
 source $TOOLDIR/tools_include.sh
 
-if [ -n "$(hostname | grep "wolfsburg")" ]; then
+# TODO: test on school computers
+set +e
+at_school="$(hostname | grep "wolfsburg")"
+set -e
+
+if [ -n "$at_school" ]; then
   dotenv_src="~/inception-dotenv"
   vmpw_src="~/inception-vmpw"
 else
@@ -23,6 +33,10 @@ fi
 
 logmsg "copying dotenv from $dotenv_src to src/.env!"
 cp $dotenv_src src/.env
+if [ $at_school ];then
+  sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' src/.env
+fi
+
 logmsg "copying vmpw from $vmpw_src to vm/inception-vmpw!"
 cp $vmpw_src vm/inception-vmpw
 

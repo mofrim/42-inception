@@ -1,0 +1,19 @@
+# vim: ft=bash
+
+function shorten_path() {
+  local path_level=$(pwd | sed 's/[^\/]//g' | wc -c)
+  if [ $path_level -gt 3 ]; then
+    pwd | sed 's/.*\/\([a-zA-Z0-9_-]\+\)\/\([a-zA-Z0-9_-]\+\)\/\([a-zA-Z0-9_-]\+\)$/\1\/\2\/\3/'
+  else
+    pwd
+  fi
+}
+
+echo
+echo -e '\e[1;96m((( Welcome to the inception-env! )))\e[0m'
+echo
+
+export INCEPTION_SHELL="ok"
+export TOOLDIR="$inception_root/tools"
+
+export PS1='(\e[32m\u\e[1;33m@\e[34minception\e[0m) \e[37m$(shorten_path \w)::\e[0m '

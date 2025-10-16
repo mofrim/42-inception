@@ -1,0 +1,8 @@
+# vim: ft=bash
+set -e
+
+# one more layer of convenience... get repo-root-dir from git.
+export inception_root=$(git rev-parse --show-toplevel)
+
+# enter the inception-shell
+bash --noprofile --rcfile $inception_root/.inception-bashrc

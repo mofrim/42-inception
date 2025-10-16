@@ -3,6 +3,8 @@ function logmsg () {
   scriptname="$(echo $0 | sed 's/^\(.*\/\)\([a-zA-Z0-9_-]\+\.sh\)$/\2/')"
   if [[ $# -eq 2 && "$1" = "-e" ]]; then
     echo -e "\e[31m[ $scriptname ] $2\e[0m"
+  elif [ $# -eq 0 ]; then
+    echo -e "\e[36m[ $scriptname ]\e[0m"
   else
     echo -e "\e[36m[ $scriptname ] $1\e[0m"
   fi
@@ -26,13 +28,15 @@ function print_cmds_green() {
   done < "$file"
 }
 
-ask_yes_no() {
-  local prompt="$1"
-  local default="${2:-n}"
+# ask_yes_no <prefix> <prompt> [default]
+function ask_yes_no() {
+  local prefix="$1"
+  local prompt="$2"
+  local default="${3:-y}"
   local answer
 
   while true; do
-    read -r -p "$prompt [y/n] ($default): " answer
+    echo -en "$prefix\e[1;35m $prompt [y/n] ($default):\e[0m " && read -r answer
     answer="${answer:-$default}"
 
     case "$answer" in
