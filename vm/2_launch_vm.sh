@@ -15,6 +15,9 @@ then
   cp -R ../src/{*,.*} $SHARED_DIR
 fi
 
+# one last time: make sure DATA_DIR is set correctly for VM!
+sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' $SHARED_DIR/.env
+
 if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
   logmsg "launching the vm!"
   logmsg "for ssh acces run:"
