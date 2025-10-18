@@ -6,16 +6,13 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/16 09:04:33 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/18 08:07:29 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-# overall TODO: cleanup this mess!
 
 NAME = inception
 
 # some colors for the log msgs
-# GRN = \e[1;92m
 GRN = \e[0;32m
 RED = \e[1;31m
 WHT = \e[1;37m
@@ -25,7 +22,7 @@ RST = \e[0m
 MSGOPN = $(YLW)--(($(GRN)
 MSGEND = $(YLW)))--$(RST)
 
-# lomsg makefile functions
+# logmsg makefile functions
 log_msg_start = @$(ECHO) "\n$(MSGOPN) $(1) $(MSGEND)"
 log_msg_mid = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)"
 log_msg_end = @$(ECHO) "$(MSGOPN) $(1) $(MSGEND)\n"
@@ -36,10 +33,9 @@ output_color_grey = @$(ECHON) "$(GRE)"
 output_colr_reset =  @$(ECHON) "$(RST)"
 
 # WoooOOooOOoOoow! Make. supports. setting. environment variables. for. all.
-# subshells. woohoo.
+# subshells. amazing.
 export TOOLDIR = $(shell readlink -f ./tools)
 
-# Control preproc consts in constants.h based on build host:
 # TODO: choose this value depending on system, cause on school PCs `-e` does
 # not have an effect.
 ECHO = echo -e
@@ -59,22 +55,21 @@ INCEPTION_VMPW = vm/inception-vmpw
 
 all: $(NAME)
 
-$(NAME): setup
+$(NAME): .setup_done
 	$(call log_msg_single,Setup done! Now type \"make run\" or \"make dev\" to start the show!)
-
-setup: .setup_done
 
 # real-file target for ensuring make will only run once
 .setup_done:
-ifneq ($(INCEPTION_SHELL),ok)
-	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
-else
+ifeq ($(INCEPTION_SHELL),ok)
 	$(call log_msg_start,Alrighty! Running for the first time. Doing setup...)
 	@sleep 0.5
 	$(output_color_grey)
 	@$(MAKE) -s sec-setup
 	@$(MAKE) -s dotenv-vmpw
 	@touch .setup_done && chmod 100 .setup_done
+else
+	$(call log_msg_single,P-L-Z run 'source .inceptionenv' first!)
+	@false
 endif
 
 $(INCEPTION_DOTENV):
@@ -119,6 +114,8 @@ sec-maria-wp:
 	cd secrets && ../tools/gen_mariadb_wp_certs.sh
 	mkdir -p $(WP_DIR)/mysql $(MARIA_DIR)/ssl
 	mv secrets/client-*.pem $(WP_DIR)/mysql
+	# yeah, right. leave CA cert  & key in 'secrets' dir as we need them for the
+	# vm system config
 	cp secrets/ca-cert.pem $(WP_DIR)/mysql
 	cp secrets/ca-cert.pem $(MARIA_DIR)/ssl
 	mv secrets/server-*.pem $(MARIA_DIR)/ssl
@@ -133,7 +130,7 @@ sec-nginx:
 	mv secrets/nginx-server-key.pem $(NGINX_DIR)/conf/server-key.pem
 	$(call log_msg_end,Done creating SSL Certs for nginx!)
 
-dev: setup
+dev: .setup_done
 	$(call log_msg_start,Okay calling docker compose up directly!)
 	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
 ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
@@ -145,43 +142,21 @@ endif
 
 #### VM hot stuff ####
 
-run: setup
+run: .setup_done
 ifneq ($(INCEPTION_SHELL),ok)
 	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
 else
 	$(call log_msg_start,Now really going for it... Starting vm_setup!)
-	cd vm && ./0_vm_install.sh
+	@cd vm && ./0_vm_install.sh
+	$(call log_msg_mid,Launching the VM...)
+	@cd vm && ./2_launch_vm.sh
+	$(call log_msg_end,I hope you enjoyed Inception!)
 endif
 
 #### Direct docker stuff ####
 
-nginx:
-	$(DOCKER) build -t inception_nginx $(REQ_DIR)/nginx/
-
-nginx-run: nginx
-	$(DOCKER) run -p 80:80 -p 443:443 inception_nginx
-	#$(DOCKER) exec -it inception /bin/bash 
-
-wp:
-	$(DOCKER) build -t inc_wp $(REQ_DIR)/wordpress/
-
-db:
-	$(DOCKER) build -t inc_db $(REQ_DIR)/mariadb
-
-db-run:
-	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
-	$(DOCKER) build -t inc_db $(REQ_DIR)/mariadb && $(DOCKER) run --name inc_db -d -v /home/frido/c0de/42/theCore/16-inception/incept/wp_db:/var/lib/mysql inc_db:latest
-
-play:
-	$(DOCKER) build -t inc_play ./play/
-	$(DOCKER) run -it inc_play # necessary to add `-it` for an interactive sesh
-
 comp:
-	# $(DOCKER) compose -f ./srcs/docker-compose.yml up -d --build
 	$(DOCKER) compose -f ./src/docker-compose.yml up --build
-
-comp-nobuild:
-	$(DOCKER) compose -f ./src/docker-compose.yml up
 
 comp-down:
 	$(DOCKER) compose -f ./src/docker-compose.yml down -v
@@ -198,11 +173,22 @@ logs:
 	-$(DOCKER) logs inc_wp_db
 	sudo cat ./wp_db/$$( $(DOCKER) logs inc_wp_db | grep Logging | sed -e "s/^.*'\/var\/lib\/mysql\///g" -e "s/'.$$//g")
 
+#### clenup recipes ####
+
+vm-clean:
+	$(call log_msg_start,Cleaning up vm-files for a fresh start...)
+	rm -rf vm/inception/{*,.*}
+	rm -f vm/nixos.qcow2
+	rm -f vm/vm-conf.nix
+	$(call log_msg_end,Done.)
+
 sec-clean:
+	$(call log_msg_start,Cleaning up keys and certs...)
 	$(output_color_grey)
 	rm -f $(WP_DIR)/mysql/*.pem
 	rm -f $(MARIA_DIR)/ssl/*.pem
 	rm -f $(NGINX_DIR)/conf/*.pem
+	rm -rf secrets/*
 
 clean:
 	$(call log_msg_start,Cleaning runtime docker stuff...)
@@ -214,6 +200,7 @@ clean:
 
 fclean:
 	$(call log_msg_start, Cleaning up hard...)
+	@$(MAKE) -s vm-clean
 	@$(MAKE) -s clean
 	@$(MAKE) -s sec-clean
 	$(call log_msg_mid,Removing setup lockfile...)
@@ -224,4 +211,4 @@ fclean:
 
 re: fclean all
 
-.PHONY: $(NAME) all nginx nginx-run play db-run db sec sec-ca sec-maria-wp sec-nginx dotenv-vmpw dev sec-setup setup test
+.PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx dev run comp comp-down comp-re logs vm-clean sec-clean clean fclean re
