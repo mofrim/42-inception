@@ -9,12 +9,9 @@ set -e
 source $TOOLDIR/tools_include.sh
 
 DAYS=365
-COUNTRY="DE"
-STATE="42"
-CITY="42"
-ORG="FMaurerIT"
-OU="IT"
-CN_SERVER="fmaurer.42.fr"
+ORG="FMaurerSoft"
+OU="FmaurerIT"
+CN="fmaurer.42.fr"
 
 if [[ ! -e ./ca-key.pem || ! -e ./ca-cert.pem ]]; then
   logmsg -e "ERROR: CA certificate has to be created first!"
@@ -22,28 +19,24 @@ if [[ ! -e ./ca-key.pem || ! -e ./ca-cert.pem ]]; then
 fi
 
 logmsg "Generating Key and CSR..."
-openssl req -nodes -newkey rsa:2048 \
--keyout nginx-server-key.pem -out nginx-server-req.pem \
--subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_SERVER"
-openssl req -nodes -newkey rsa:2048 \
--keyout nginx-server-key.pem -out nginx-server-req.pem \
--subj "/CN=$CN_SERVER"
+
+openssl req -nodes -newkey rsa:3072 \
+-keyout nginx-server-key.pem -out nginx-server-req.csr \
+-subj "/O=$ORG/OU=$OU/CN=$CN"
 
 # generate signed cert with the CSR (cert signing request). The `set_serial` arg
 # is for making the cert unique even if all other fields are the same (which
 # actually isn't the case here..)
 logmsg "Generating & signing the final cert.."
-openssl x509 -req -in nginx-server-req.pem -days $DAYS \
-  -CA ca-cert.pem \
-  -CAkey ca-key.pem \
-  -set_serial 03 \
-  -out nginx-server-cert.pem
 
+openssl x509 -req -in nginx-server-req.csr -CA ca-cert.pem -CAkey ca-key.pem \
+  -CAcreateserial -out nginx-server-cert.pem -days 365 -sha256 \
+  -extfile <(cat <<EOF
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = DNS:fmaurer.42.fr
+EOF
+)
 
 # remove used CSR
-rm -f nginx-server-req.pem
-
-# logmsg "Generating self-signed ssl-cert for nginx..."
-# openssl req -x509 -nodes -days $DAYS -newkey rsa:2048 \
-# -keyout nginx-server-key.pem -out nginx-server-cert.pem -subj \
-# "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_SERVER"
+rm -f nginx-server-req.csr

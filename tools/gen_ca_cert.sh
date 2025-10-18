@@ -9,18 +9,17 @@ set -e
 source $TOOLDIR/tools_include.sh
 
 DAYS=365
-COUNTRY="DE"
-STATE="42"
-CITY="42"
-ORG="FMaurerIT"
-OU="IT"
-CN_CA="FMaurerCA"
+ORG="FmaurerSoft"
+OU="FmaurerCA"
+CN="FMaurerCA"
 
 logmsg "Generating CA key and certificate..."
 
-openssl genrsa 4096 > ca-key.pem
-
-openssl req -new -x509 -nodes -days $DAYS \
-  -key ca-key.pem \
-  -out ca-cert.pem \
-  -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_CA"
+# gen the rootCA with all the extensions fields set required by modern browsers.
+# maybe TODO: verify what is _really_ needed here
+openssl req -x509 -newkey rsa:3072 -sha256 -days $DAYS \
+  -nodes -keyout ca-key.pem -out ca-cert.pem \
+  -subj "/O=$ORG/OU=$OU/CN=$CN" \
+  -addext "keyUsage=critical,keyCertSign" \
+  -addext "basicConstraints=critical,CA:TRUE,pathlen:0" \
+  -addext "subjectKeyIdentifier=hash"

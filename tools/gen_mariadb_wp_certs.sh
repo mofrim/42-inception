@@ -10,13 +10,9 @@ fi
 set -e
 source $TOOLDIR/tools_include.sh
 
-DAYS=365000
-COUNTRY="US"
-STATE="42"
-CITY="42"
-ORG="FMaurerIT"
-OU="IT"
-CN_CA="FMaurerCA"
+DAYS=365
+ORG="FmaurerSoft"
+OU="FmaurerIT"
 CN_SERVER="db"
 CN_CLIENT="wp"
 
@@ -31,7 +27,7 @@ logmsg "Generating server certificate..."
 openssl req -newkey rsa:2048 -nodes \
   -keyout server-key.pem \
   -out server-req.pem \
-  -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_SERVER"
+  -subj "/O=$ORG/OU=$OU/CN=$CN_SERVER"
 
 # generate signed cert with the CSR (cert signing request)
 openssl x509 -req -in server-req.pem -days $DAYS \
@@ -45,7 +41,7 @@ logmsg "Generating client certificate..."
 openssl req -newkey rsa:2048 -nodes \
   -keyout client-key.pem \
   -out client-req.pem \
-  -subj "/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORG/OU=$OU/CN=$CN_CLIENT"
+  -subj "/O=$ORG/OU=$OU/CN=$CN_CLIENT"
 
 openssl x509 -req -in client-req.pem -days $DAYS \
   -CA ca-cert.pem \
