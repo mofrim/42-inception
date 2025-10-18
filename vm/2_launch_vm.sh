@@ -41,16 +41,15 @@ if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
     -device e1000,netdev=net0 \
     -netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
 
-  logmsg "for ssh acces run:"
-  echo -e "\e[32mssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost\e[0m"
-  logmsg "...or simply 'ssh_to_vm' ;)"
-  logmsg "PID of the VM if something goes wrong: $! (or simply run 'killvm')"
+  logmsg "for ssh acces run: 'ssh_to_vm'"
   export INCEPTION_VM_PID=$!
+  logmsg "for killing the VM simply run 'killvm'"
   VM_RUN_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
   unset VM_RUN_SHELL
 else
   logmsg "okay, maybe next time."
 fi
+echo
 
 ## manual mounting the shared folder:
 # sudo mount -t 9p -o trans=virtio,msize=524288 tag_name /mount/point/on/guest
