@@ -31,13 +31,15 @@ if [[ -z $VM_INSTALL_SHELL && -z $VM_RUN_SHELL ]]; then
 elif [ -n "$VM_RUN_SHELL" ]; then
   alias killvm='kill $INCEPTION_VM_PID'
   alias ssh_to_vm='ssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -q -o StrictHostKeyChecking=no -p 5555 fmaurer@localhost'
-  echo -e '\e[1;96m((( vm-run-env: press ctrl-d when finished! )))\e[0m'
-  export PS1="(${GREEN}\u${CYAN}@${BLUE}inception${RED}RunVM${RESET}) ${GRAY}::${RESET} "
+  PS1="\n${BRCYAN}((( '${GREEN}killvm${BRCYAN}' and '${GREEN}ssh_to_vm${BRCYAN}' cmds available )))\n"
+  PS1="$PS1((( run 'exit' or press ctrl-d when finished! )))${RESET}\n"
+  export PS1="$PS1(${GREEN}\u${CYAN}@${BLUE}inception${RED}RunVM${RESET}) ${GRAY}::${RESET} "
 else
   alias killvm='kill $INCEPTION_VM_PID'
   alias ssh_to_vm='ssh-keygen -f "/home/$(id -un)/.ssh/known_hosts" -R "[localhost]:5555"; ssh -q -o StrictHostKeyChecking=no -p 5555 root@localhost'
   alias setup_vm_system='./0a_setup_vm_system.sh'
-  echo -e '\e[1;96m((( vm-install-env: press ctrl-d when finished! )))\e[0m'
-  export PS1="(${GREEN}\u${CYAN}@${BLUE}inception${RED}InstallVM${RESET}) ${GRAY}::${RESET} "
+  PS1="\n${BRCYAN}((( when root pw is set in vm, just run '${GREEN}setup_vm_system${BRCYAN}' )))\n"
+  PS1="$PS1((( finally: run '${GREEN}exit${BRCYAN}' or press ctrl-d to launch vm )))${RESET}\n"
+  export PS1="$PS1(${GREEN}\u${CYAN}@${BLUE}inception${RED}InstallVM${RESET}) ${GRAY}::${RESET} "
 fi
 
