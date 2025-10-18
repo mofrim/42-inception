@@ -27,6 +27,15 @@ if [ ! -e ./inception-vmpw ]; then
 fi
 sed -i "s|PW_GOES_HERE|$(escape_sed "$(cat ./inception-vmpw)")|" ./vm-conf.nix
 
+# patching in the current active ca-cert
+if [ ! -e ../secrets/ca-cert.pem ]; then
+  logmsg -e "could not find ca-cert.pem! it needs to be in <repo-root>/secrets."
+  exit 1
+fi
+logmsg "Patching in current ca-cert..."
+sed -i '/CERT_GOES_HERE/r ../secrets/ca-cert.pem' ./vm-conf.nix
+sed -i '/CERT_GOES_HERE/d' ./vm-conf.nix
+
 if [ ! -e $nixos_image ]; then
 	logmsg "nixos-iso not found. downloading!"
 	wget https://channels.nixos.org/nixos-25.05/$nixos_image
@@ -54,8 +63,10 @@ qemu-system-x86_64 \
 sleep 0.5
 clear
 logmsg "here is you todo-list for the vm:"
+echo
 print_cmds_green ./1_nix_setup.sh
-logmsg "PID of the VM if something goes wrong: $! (or simply run 'killvm')"
+echo
+logmsg "If you feel like simply run 'killvm' to kill the VM"
 export INCEPTION_VM_PID=$!
 VM_INSTALL_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
 unset VM_INSTALL_SHELL

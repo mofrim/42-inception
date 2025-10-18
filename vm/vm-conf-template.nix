@@ -180,6 +180,11 @@ in
     ];
   };
 
+  security.pki.certificates = [
+    ''
+      CERT_GOES_HERE
+    ''
+  ];
 
   # deactivate sudo pw
   security.sudo.wheelNeedsPassword = false;
