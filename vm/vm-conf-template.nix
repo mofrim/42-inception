@@ -17,15 +17,14 @@ in
     xorg.xorgserver
     xorg.xinit
     xorg.xinput
-    # xorg.xauth
     xorg.setxkbmap
     xorg.xf86inputevdev
     fluxbox
-    
+
     st-snazzy
     brave
     gnumake
-    
+
     vim
   ];
 
@@ -35,7 +34,7 @@ in
       isNormalUser = true;
       uid = 42;
       openssh.authorizedKeys.keys = [
-       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFG0nJF3ZMmkgkSAG42VOUyN65w0wSEPeZ+229UiZqW1 fmaurer@42" 
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFG0nJF3ZMmkgkSAG42VOUyN65w0wSEPeZ+229UiZqW1 fmaurer@42" 
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlhRzDpd+8nwaDMnAeXjpyM/M0RhCA7LYZCEFKHWYI7 mofrim@posteo.de"
       ];
 
@@ -180,6 +179,7 @@ in
     ];
   };
 
+
   security.pki.certificates = [
     ''
       CERT_GOES_HERE
@@ -214,128 +214,128 @@ in
   '';
 
   environment.etc."X11/xorg.conf".text = lib.mkForce ''
-        Section "Files"
+    Section "Files"
 
-        # FontPath "/nix/store/yz1mk2skrz3h01dr3px4pbgxzvskyh5n-font-cursor-misc-1.0.4/lib/X11/fonts/misc"
-        FontPath "${pkgs.xorg.fontcursormisc.outPath}/lib/X11/fonts/misc"
+    # FontPath "/nix/store/yz1mk2skrz3h01dr3px4pbgxzvskyh5n-font-cursor-misc-1.0.4/lib/X11/fonts/misc"
+    FontPath "${pkgs.xorg.fontcursormisc.outPath}/lib/X11/fonts/misc"
 
-        # FontPath "/nix/store/yrb3bh519rj7kis83x1bd38apgf9jdg4-font-misc-misc-1.1.3/lib/X11/fonts/misc"
-        FontPath "${pkgs.xorg.fontmiscmisc.outPath}/lib/X11/fonts/misc"
+    # FontPath "/nix/store/yrb3bh519rj7kis83x1bd38apgf9jdg4-font-misc-misc-1.1.3/lib/X11/fonts/misc"
+    FontPath "${pkgs.xorg.fontmiscmisc.outPath}/lib/X11/fonts/misc"
 
-        # FontPath "/nix/store/8lwwcwnf8cgqc4bk1l2r8z1mfvpbbggc-unifont-16.0.03/share/fonts"
-        FontPath "${pkgs.unifont.outPath}/share/fonts"
+    # FontPath "/nix/store/8lwwcwnf8cgqc4bk1l2r8z1mfvpbbggc-unifont-16.0.03/share/fonts"
+    FontPath "${pkgs.unifont.outPath}/share/fonts"
 
-        # FontPath "/nix/store/v2i0vz32xwafrf60vw66zl98fc699iyg-font-adobe-100dpi-1.0.4/lib/X11/fonts/100dpi"
-        FontPath "${pkgs.xorg.fontadobe100dpi.outPath}/lib/X11/fonts/100dpi"
+    # FontPath "/nix/store/v2i0vz32xwafrf60vw66zl98fc699iyg-font-adobe-100dpi-1.0.4/lib/X11/fonts/100dpi"
+    FontPath "${pkgs.xorg.fontadobe100dpi.outPath}/lib/X11/fonts/100dpi"
 
-        # FontPath "/nix/store/qav6xpa83664kijqrma0xxjm25wr7whm-font-adobe-75dpi-1.0.4/lib/X11/fonts/75dpi"
-        FontPath "${pkgs.xorg.fontadobe75dpi.outPath}/lib/X11/fonts/75dpi"
+    # FontPath "/nix/store/qav6xpa83664kijqrma0xxjm25wr7whm-font-adobe-75dpi-1.0.4/lib/X11/fonts/75dpi"
+    FontPath "${pkgs.xorg.fontadobe75dpi.outPath}/lib/X11/fonts/75dpi"
 
-        ModulePath "${pkgs.xorg.xorgserver.outPath}/lib/xorg/modules"
-        ModulePath "${pkgs.xorg.xf86inputevdev.outPath}/lib/xorg/modules"
-        ModulePath "${pkgs.xorg.xf86inputlibinput.outPath}/lib/xorg/modules"
+    ModulePath "${pkgs.xorg.xorgserver.outPath}/lib/xorg/modules"
+    ModulePath "${pkgs.xorg.xf86inputevdev.outPath}/lib/xorg/modules"
+    ModulePath "${pkgs.xorg.xf86inputlibinput.outPath}/lib/xorg/modules"
 
-        EndSection
+    EndSection
 
-        Section "ServerFlags"
-        Option "AllowMouseOpenFail" "on"
-        Option "DontZap" "on"
+    Section "ServerFlags"
+    Option "AllowMouseOpenFail" "on"
+    Option "DontZap" "on"
 
-        EndSection
+    EndSection
 
-        Section "Module"
+    Section "Module"
 
-        EndSection
+    EndSection
 
-        Section "Monitor"
-        Identifier "Monitor[0]"
-        # Set a higher refresh rate so that resolutions > 800x600 work.
-        HorizSync 30-140
-        VertRefresh 50-160
+    Section "Monitor"
+    Identifier "Monitor[0]"
+    # Set a higher refresh rate so that resolutions > 800x600 work.
+    HorizSync 30-140
+    VertRefresh 50-160
 
-        EndSection
+    EndSection
 
-        # Additional "InputClass" sections
-        Section "InputClass"
-        Identifier "libinput mouse configuration"
-        MatchDriver "libinput"
-        MatchIsPointer "on"
+    # Additional "InputClass" sections
+    Section "InputClass"
+    Identifier "libinput mouse configuration"
+    MatchDriver "libinput"
+    MatchIsPointer "on"
 
-        Option "AccelProfile" "adaptive"
-        Option "LeftHanded" "off"
-        Option "MiddleEmulation" "on"
-        Option "NaturalScrolling" "off"
+    Option "AccelProfile" "adaptive"
+    Option "LeftHanded" "off"
+    Option "MiddleEmulation" "on"
+    Option "NaturalScrolling" "off"
 
-        Option "ScrollMethod" "twofinger"
-        Option "HorizontalScrolling" "on"
-        Option "SendEventsMode" "enabled"
-        Option "Tapping" "on"
+    Option "ScrollMethod" "twofinger"
+    Option "HorizontalScrolling" "on"
+    Option "SendEventsMode" "enabled"
+    Option "Tapping" "on"
 
-        Option "TappingDragLock" "on"
-        Option "DisableWhileTyping" "off"
+    Option "TappingDragLock" "on"
+    Option "DisableWhileTyping" "off"
 
-        EndSection
+    EndSection
 
-        Section "InputClass"
-        Identifier "libinput touchpad configuration"
-        MatchDriver "libinput"
-        MatchIsTouchpad "on"
+    Section "InputClass"
+    Identifier "libinput touchpad configuration"
+    MatchDriver "libinput"
+    MatchIsTouchpad "on"
 
-        Option "AccelProfile" "adaptive"
-        Option "LeftHanded" "off"
-        Option "MiddleEmulation" "on"
-        Option "NaturalScrolling" "off"
+    Option "AccelProfile" "adaptive"
+    Option "LeftHanded" "off"
+    Option "MiddleEmulation" "on"
+    Option "NaturalScrolling" "off"
 
-        Option "ScrollMethod" "twofinger"
-        Option "HorizontalScrolling" "on"
-        Option "SendEventsMode" "enabled"
-        Option "Tapping" "on"
+    Option "ScrollMethod" "twofinger"
+    Option "HorizontalScrolling" "on"
+    Option "SendEventsMode" "enabled"
+    Option "Tapping" "on"
 
-        Option "TappingDragLock" "on"
-        Option "DisableWhileTyping" "off"
+    Option "TappingDragLock" "on"
+    Option "DisableWhileTyping" "off"
 
-        EndSection
+    EndSection
 
-        Section "ServerLayout"
-        Identifier "Layout[all]"
+    Section "ServerLayout"
+    Identifier "Layout[all]"
 
-        # Reference the Screen sections for each driver.  This will
-        # cause the X server to try each in turn.
-        Screen "Screen-modesetting[0]"
+    # Reference the Screen sections for each driver.  This will
+    # cause the X server to try each in turn.
+    Screen "Screen-modesetting[0]"
 
-        EndSection
+    EndSection
 
-        # For each supported driver, add a "Device" and "Screen"
-        # section.
+    # For each supported driver, add a "Device" and "Screen"
+    # section.
 
-        Section "Device"
-        Identifier "Device-modesetting[0]"
-        Driver "modesetting"
+    Section "Device"
+    Identifier "Device-modesetting[0]"
+    Driver "modesetting"
 
-        EndSection
+    EndSection
 
-        Section "Screen"
-        Identifier "Screen-modesetting[0]"
-        Device "Device-modesetting[0]"
-        Monitor "Monitor[0]"
+    Section "Screen"
+    Identifier "Screen-modesetting[0]"
+    Device "Device-modesetting[0]"
+    Monitor "Monitor[0]"
 
-        SubSection "Display"
-        Depth 8
-        Modes "1024x768"
+    SubSection "Display"
+    Depth 8
+    Modes "1280×720" "1024x768"
 
-        EndSubSection
-        SubSection "Display"
-        Depth 16
-        Modes "1024x768"
+    EndSubSection
+    SubSection "Display"
+    Depth 16
+    Modes "1280×720" "1024x768"
 
-        EndSubSection
-        SubSection "Display"
-        Depth 24
-        Modes "1024x768"
+    EndSubSection
+    SubSection "Display"
+    Depth 24
+    Modes "1280×720" "1024x768"
 
-        EndSubSection
-        EndSection
-      '';
+    EndSubSection
+    EndSection
+  '';
 
   environment.etc."X11/xorg.conf.d/10-evdev.conf".text = lib.mkForce ''
     Section "InputClass"
@@ -381,16 +381,6 @@ in
   '';
 
   services.openssh.enable = true;
-
-  # fileSystems."shared" = {
-  #   device = "shared";
-  #   fsType = "9p";
-  #   options = [
-  #     "_netdev"
-  #     "trans=virtio"
-  #     "msize=524288"
-  #   ];
-  # };
 
   fileSystems."/home/fmaurer/inception" = {
     device = "shared";
