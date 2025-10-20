@@ -9,7 +9,7 @@ if [[ "${PWD##*/}" != "vm"  ]];then
 fi
 
 if [ -z "$VM_INSTALL_SHELL" ]; then
-  logmsg -e "The oneliner only makes sense during VM install session."
+  logmsg -e "Running this script only makes sense during VM install session."
   exit 1
 fi
 

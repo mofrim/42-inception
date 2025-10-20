@@ -15,15 +15,16 @@ if [[ "${PWD##*/}" != "vm"  ]];then
 fi
 
 SHARED_DIR="./inception"
+SRCDIR="../srcs"
 
-# check if all inception files from src have been copied to dir shared with the
+# check if all inception files from srcs have been copied to dir shared with the
 # VM. if not: do it.
 if [[ ( ! -e $SHARED_DIR/requirements || ! -e $SHARED_DIR/docker-compose.yml ) \
-  && -e ../src ]]
+  && -e $SRCDIR ]]
 then
   logmsg "copying inception to vm-shared dir"
   rm -rf $SHARED_DIR/* && rm -f $SHARED_DIR/.env
-  cp -R ../src/{*,.*} $SHARED_DIR
+  cp -R $SRCDIR/{*,.*} $SHARED_DIR
 fi
 
 # one last time: make sure DATA_DIR is set correctly for VM!

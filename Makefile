@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/18 08:07:29 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/20 22:13:30 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,13 +44,15 @@ ECHON = echo -en
 # to be clear here.
 DOCKER = docker
 
-REQ_DIR	=	src/requirements
+SRCDIR = srcs
+
+REQ_DIR	=	$(SRCDIR)/requirements
 WP_DIR	=	$(REQ_DIR)/wordpress
 MARIA_DIR	=	$(REQ_DIR)/mariadb
 NGINX_DIR	=	$(REQ_DIR)/nginx
 
 # files bringing the secrets from the outside.
-INCEPTION_DOTENV = src/.env
+INCEPTION_DOTENV = $(SRCDIR)/.env
 INCEPTION_VMPW = vm/inception-vmpw
 
 all: $(NAME)
@@ -137,7 +139,7 @@ ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
 	$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
 else
 	$(call log_msg_mid,Alrighty! Running docker compose up!)
-	cd src && docker compose up --build
+	cd $(SRCDIR) && docker compose up --build
 endif
 
 #### VM hot stuff ####
@@ -156,10 +158,10 @@ endif
 #### Direct docker stuff ####
 
 comp:
-	$(DOCKER) compose -f ./src/docker-compose.yml up --build
+	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml up --build
 
 comp-down:
-	$(DOCKER) compose -f ./src/docker-compose.yml down -v
+	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml down -v
 
 comp-re: clean comp
 
@@ -206,7 +208,7 @@ fclean:
 	$(call log_msg_mid,Removing setup lockfile...)
 	rm -f .setup_done
 	$(call log_msg_mid,Even removing .env an vmpw files...)
-	rm -f src/.env vm/inception-vmpw
+	rm -f $(SRCDIR)/.env vm/inception-vmpw
 	$(call log_msg_end, Cleaning up hard... is done!)
 
 re: fclean all
