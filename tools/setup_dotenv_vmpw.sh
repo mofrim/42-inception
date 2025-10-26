@@ -8,6 +8,8 @@ fi
 set -e
 source $TOOLDIR/tools_include.sh
 
+srcdir=srcs
+
 # TODO: test on school computers
 set +e
 at_school="$(hostname | grep "wolfsburg")"
@@ -31,10 +33,10 @@ if [ ! -e $vmpw_src ]; then
   exit 1
 fi
 
-logmsg "copying dotenv from $dotenv_src to src/.env!"
-cp $dotenv_src src/.env
+logmsg "copying dotenv from $dotenv_src to $srcdir/.env!"
+cp $dotenv_src $srcdir/.env
 if [ $at_school ];then
-  sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' src/.env
+  sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' $srcdir/.env
 fi
 
 logmsg "copying vmpw from $vmpw_src to vm/inception-vmpw!"
