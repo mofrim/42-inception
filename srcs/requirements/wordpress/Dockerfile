@@ -50,6 +50,10 @@ RUN rm /etc/php82/php-fpm.d/www.conf;
 # copy custom PHP-FPM config
 COPY ./conf/php-fpm.conf /etc/php82/php-fpm.d/wordpress.conf
 
+# copy ... ;)
+COPY ./my-home.html /var/www/html/wp/wp-content/themes/twentytwentyfive/templates/home.html
+COPY ./tux2.png /var/www/html/wp/wp-content/themes/twentytwentyfive/assets/images/
+
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
       chmod +x wp-cli.phar && \
       mv wp-cli.phar /usr/local/bin/wp && \
