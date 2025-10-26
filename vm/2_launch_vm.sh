@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-
 set -e
-source $TOOLDIR/tools_include.sh
+
+if [[ "${PWD##*/}" != "vm"  ]];then
+  logmsg -e "script can only be run from vm-dir."
+  exit
+fi
 
 if [ -n "$VM_INSTALL_SHELL" ];then
   logmsg "still in VM_INSTALL_SHELL. plz hit ctrl-d to escape from shell-hell."
   exit
 fi
 
-if [[ "${PWD##*/}" != "vm"  ]];then
-  logmsg -e "script can only be run from vm-dir."
-  exit
-fi
+source $TOOLDIR/tools_include.sh
 
 SHARED_DIR="./inception"
 SRCDIR="../srcs"
@@ -31,7 +31,7 @@ fi
 sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' $SHARED_DIR/.env
 
 if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
-  logmsg "launching the vm!"
+  logmsg "yes! going for it!"
 
   qemu-system-x86_64 \
     -enable-kvm \

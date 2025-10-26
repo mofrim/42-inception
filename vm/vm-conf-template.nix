@@ -163,7 +163,9 @@ in
           fi
         '';
         bashrcExtra = ''
-          echo "- run 'make' to start the inception circus"
+          echo "Welcome to the Inception VM :)"
+          echo
+          echo "- run 'make' to start the inception show"
           echo "- run 'ciao' to shutdown vm"
         '';
       };

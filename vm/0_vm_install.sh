@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
 set -e
+
+if [ -z "$INCEPTION_SHELL"]; then
+  echo -e "\n\e[31mPlease 'source .inceptionenv' in repo-root firt!\e[0m"
+  exit 1
+fi
+
+if [[ "${PWD##*/}" != "vm"  ]];then
+  logmsg -e "script can only be run from vm-dir."
+  exit 1
+fi
+
 source $TOOLDIR/tools_include.sh
 
 nixos_image="latest-nixos-minimal-x86_64-linux.iso"
@@ -10,11 +21,6 @@ nixos_image="latest-nixos-minimal-x86_64-linux.iso"
 if [ ! -e ./vm-conf-template.nix ]; then
 	logmsg -e "ERROR: ./vm-conf-template.nix not found!"
 	exit 1
-fi
-
-if [[ "${PWD##*/}" != "vm"  ]];then
-  logmsg -e "script can only be run from vm-dir."
-  exit
 fi
 
 logmsg "patching vm-conf.nix with current UID & PWs"
@@ -71,6 +77,6 @@ export INCEPTION_VM_PID=$!
 VM_INSTALL_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
 unset VM_INSTALL_SHELL
 
-logmsg "Alrighty! Done installing & setting up the our VM!"
+logmsg "Alrighty! Done installing & setting up the Inception VM!"
 
 ## now ssh into the vm and setup the system...
