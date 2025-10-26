@@ -1,5 +1,12 @@
 # my inception docker journey 
 
+## ressources
+
+- [https://ssl-config.mozilla.org/](https://ssl-config.mozilla.org/) nice for
+  generating default nginx cfg
+- [https://www.ssllabs.com/ssltest/](https://www.ssllabs.com/ssltest/) maybe use
+  this for testing ssl setup of my own sites.
+
 ## learnings
 
 - always use `apk add --no-cache` in Dockerfiles with alpine image base. makes
@@ -35,5 +42,3 @@ at least one ressource mentioning the correct way of generating certs:
 
 - verify ssl with openssl direct: `openssl s_client -connect fmaurer.42.fr:443
   -servername fmaurer.42.fr`
-
-
