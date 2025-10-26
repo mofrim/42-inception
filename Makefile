@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/20 22:13:30 by fmaurer          ###   ########.fr        #
+#    Updated: 2025/10/26 20:58:52 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -175,7 +175,7 @@ logs:
 	-$(DOCKER) logs inc_wp_db
 	sudo cat ./wp_db/$$( $(DOCKER) logs inc_wp_db | grep Logging | sed -e "s/^.*'\/var\/lib\/mysql\///g" -e "s/'.$$//g")
 
-#### clenup recipes ####
+#### cleanup recipes ####
 
 vm-clean:
 	$(call log_msg_start,Cleaning up vm-files for a fresh start...)
