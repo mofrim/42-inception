@@ -18,18 +18,17 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 		mariadbd-safe --user=mysql --datadir=/var/lib/mysql --skip-networking \
 			--no-auto-restart &
 
-		# wait for mariadb to start
+		# wait for mariadb to start. give it 10sec to do this.
 		entry_msg "Waiting for MariaDB to start..."
-		for i in $(seq 0 30); do
+		for i in $(seq 1 10); do
 			if mariadb-admin ping >/dev/null 2>&1; then
 				break
 			fi
 			entry_msg "MariaDB is unavailable - sleeping"
 			sleep 1
 		done
-
-		if [ "$i" = 0 ]; then
-			>&2 entry_msg "MariaDB did not start"
+		if [ "$i" = 10 ]; then
+			>&2 entry_msg "Uh, oh! MariaDB does not start. Giving up."
 			exit 1
 		fi
 

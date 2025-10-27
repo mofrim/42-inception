@@ -24,8 +24,6 @@ do_the_crazy_sed () {
   sed -i "s|define( '$key_name', \+'put your unique phrase here' );|define( '$key_name', '$escaped_key_content');|" $wpdir/wp-config.php
 }
 
-# FIXME: add more cfg here
-
 # generate wp-config.php if it doesn't exist. on first-run wordpress will
 # already be downloaded and extracted to $wp_dir from the corresponding step in
 # Dockerfile. so all we have to do here is copy over wp-config-sample.php and
@@ -62,17 +60,31 @@ if ! command -v wp &> /dev/null; then
   exit 1
 fi
 
-# wait for mariadb to become available
-until mariadb -h db -u $WP_DB_USER --password=$WP_DB_PW -e "SELECT 1;" &> /dev/null; do
-  >&2 entry_msg "MariaDB is unavailable - sleeping"
-  sleep 1
+# wait for mariadb to become available. explicitly avoiding infinite loop here
+for i in $(seq 1 10); do
+	if mariadb -h db -u $WP_DB_USER --password=$WP_DB_PW -e "SELECT 1;" &> /dev/null; then
+		break
+	fi
+	>&2 entry_msg "MariaDB is unavailable - sleeping"
+	sleep 1
 done
+if [ $i -eq 10 ]; then
+	>&2 entry_msg "Uh, oh! MariaDB does not start. Giving up."
+	exit 1
+fi
 
-# alias long for otherwise command
+# just for educational purpose: the shorter but possibly indefinitely looping
+# version:
+
+# until mariadb -h db -u $WP_DB_USER --password=$WP_DB_PW -e "SELECT 1;" &> /dev/null; do
+#  >&2 entry_msg "MariaDB is unavailable - sleeping"
+#   sleep 1
+# done
+
+# alias for otherwise long command
 # NOTE: using `--url="${DOMAIN_NAME}` with _every_ wp-cli command to avoid
 # Warning that HTTP_HOST is not set
 wp_cmd="wp --path=$wp_dir --url=$DOMAIN_NAME"
-
 
 if ! $wp_cmd core is-installed --url="$DOMAIN_NAME"; then
   entry_msg "setting up wordpress using wp-cli"
