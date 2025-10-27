@@ -1,7 +1,7 @@
 FROM alpine:3.22
 
-# RUN apk add --no-cache mariadb mariadb-client bash;
-RUN apk add --no-cache mariadb mariadb-client bash;
+# client is needed for the entrypoint
+RUN apk add --no-cache mariadb mariadb-client;
 
 # after running this there is also a user named 'mysql' and the dir
 # `/var/lib/mysql` owned by this user on the system
@@ -13,16 +13,9 @@ COPY mariadb.cnf /etc/mysql
 COPY ./ssl/*.pem /etc/mysql/ssl/
 RUN chown -R mysql:root /etc/mysql/ssl/;
 
-# # Expose the default MariaDB port
-# EXPOSE 3306
-#
-# # Set the volume for the database
-# VOLUME ["/var/lib/mysql"]
-
-COPY maria-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/maria-entrypoint.sh;
-
-ENTRYPOINT ["maria-entrypoint.sh"]
+COPY mariadb-entrypoint.sh /mariadb-entrypoint.sh
+RUN chmod 700 /mariadb-entrypoint.sh;
+ENTRYPOINT ["/mariadb-entrypoint.sh"]
 
 # launching mariadb using `mariadbd-safe` is the recommended way for
 # non-system-service use.

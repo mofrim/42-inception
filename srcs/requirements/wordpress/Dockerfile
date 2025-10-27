@@ -35,7 +35,7 @@ RUN apk update && apk upgrade && apk add --no-cache \
 RUN addgroup -g 1001 www && adduser -D -G www incept_fpm;
 
 # download and extract WP  && set appropriate permissions. not using
-# `latest.tar.gz` here for better reproducebility
+# `latest.tar.gz` here for better reproducibility
 RUN mkdir -p /var/www/html/wp && \
       cd /var/www/html/wp && \
       curl -O https://wordpress.org/wordpress-6.8.3.tar.gz && \
@@ -54,6 +54,7 @@ COPY ./conf/php-fpm.conf /etc/php82/php-fpm.d/wordpress.conf
 COPY ./my-home.html /var/www/html/wp/wp-content/themes/twentytwentyfive/templates/home.html
 COPY ./tux2.png /var/www/html/wp/wp-content/themes/twentytwentyfive/assets/images/
 
+# get wp-cli
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
       chmod +x wp-cli.phar && \
       mv wp-cli.phar /usr/local/bin/wp && \
@@ -64,9 +65,8 @@ COPY ./mariadb-client.cnf /etc/mysql/mariadb.conf.d/50-mysql-clients.cnf
 COPY ./mysql/*.pem /etc/mysql/ssl/
 
 # create entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod 700 /entrypoint.sh;
-
-ENTRYPOINT ["/entrypoint.sh"]
+COPY wp-entrypoint.sh /wp-entrypoint.sh
+RUN chmod 700 /wp-entrypoint.sh;
+ENTRYPOINT ["/wp-entrypoint.sh"]
 
 CMD ["php-fpm82", "-F"]
