@@ -14,6 +14,7 @@ fi
 
 source $TOOLDIR/tools_include.sh
 
+image_url="https://channels.nixos.org/nixos-25.05"
 nixos_image="latest-nixos-minimal-x86_64-linux.iso"
 
 # first patch the vm-conf.nix with current users UID because we want to have
@@ -44,7 +45,7 @@ sed -i '/CERT_GOES_HERE/d' ./vm-conf.nix
 
 if [ ! -e $nixos_image ]; then
 	logmsg "nixos-iso not found. downloading!"
-	wget https://channels.nixos.org/nixos-25.05/$nixos_image
+	wget "$image_url/$nixos_image"
 fi
 
 if [ ! -e ./nixos.qcow2 ]; then
