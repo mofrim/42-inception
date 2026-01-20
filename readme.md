@@ -1,5 +1,20 @@
 # my inception docker journey 
 
+## notes about finishing this
+
+- next things i will have to decide are:
+
+  + will i go only with quick-run version? this means i will have to upload the
+    iso-image somewhere. also i would have to make the repo for the iso
+    available in order to explain it.
+  + bonus?
+  + are all services implemented the way i like it? according to subject?
+
+- what do i do with the normal `make run` recipe? it might be good to still have
+  this ready if the evaluator is weird. also i should work the whole thing
+  through in a normal VM
+
+
 ## ressources
 
 - [https://ssl-config.mozilla.org/](https://ssl-config.mozilla.org/) nice for
