@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/01/20 15:15:10 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/01/20 21:51:53 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -104,6 +104,7 @@ else
 	$(call log_msg_end,Done setting up secrets.)
 endif
 
+# create the root cert
 sec-ca:
 	$(call log_msg_start,Creating the CA cert...)
 	$(output_color_grey)
@@ -111,6 +112,8 @@ sec-ca:
 	$(output_colr_reset)
 	$(call log_msg_end,Done with CA Cert!)
 
+
+# only generate the secrets for the db and wp communication
 sec-maria-wp:
 	$(call log_msg_start,Creating SSL certs for mariadb...)
 	$(output_color_grey)
@@ -124,6 +127,7 @@ sec-maria-wp:
 	mv secrets/server-*.pem $(MARIA_DIR)/ssl
 	$(call log_msg_end,Done Creating SSL certs for mariadb!)
 
+# only generate nginx secrets
 sec-nginx:
 	$(call log_msg_start,Creating SSL Certs for nginx...)
 	$(output_color_grey)
@@ -133,6 +137,8 @@ sec-nginx:
 	mv secrets/nginx-server-key.pem $(NGINX_DIR)/conf/server-key.pem
 	$(call log_msg_end,Done creating SSL Certs for nginx!)
 
+# this recipe only works on machines where fmaurer.42.fr was redirected to
+# localhost in /etc/hosts.
 dev: .setup_done
 	$(call log_msg_start,Okay calling docker compose up directly!)
 	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
@@ -177,6 +183,7 @@ comp-down:
 
 comp-re: clean comp
 
+# FIXME: DEPRECATE or adopt this!
 logs:
 	$(call log_msg_start,nginx logs...)
 	-$(DOCKER) exec -it inc_nginx cat '/var/log/nginx/error.log'
