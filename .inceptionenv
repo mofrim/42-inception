@@ -1,8 +1,17 @@
 # vim: ft=bash
 set -e
 
-# one more layer of convenience... get repo-root-dir from git.
-export inception_root=$(git rev-parse --show-toplevel)
+if [ -z "$INCEPTION_SHELL" ]; then
 
-# enter the inception-shell
-bash --noprofile --rcfile $inception_root/.inception-bashrc
+  # one more layer of convenience... get repo-root-dir from git.
+  export inception_root=$(git rev-parse --show-toplevel)
+
+  # enter the inception-shell
+  bash --noprofile --rcfile $inception_root/.inception-bashrc
+
+else
+
+  # print msg as we are already inside inception-shell
+  echo -e "\e[1;93m--((\e[0;32m ...already in INCEPTION_SHELL. Proceed with 'make run' or 'make dev' ;) \e[1;93m))--\e[0m\n"
+
+fi
