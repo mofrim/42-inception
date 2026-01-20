@@ -7,6 +7,15 @@
   </head>
   <body>
     <style>
+
+    :root {
+      --first-color: #64868e;
+      --second-color: #98b4a6;
+      --third-color: #d1e4d1;
+      --fourth-color: #f3fbf1;
+    }
+
+
       a:hover {
         background-color: pink;
       }
@@ -19,12 +28,16 @@
         flex-direction: column;
         text-align: center;
         width: 100%;
+        border-radius: 10px;
+        background-color: var(--first-color);
       }
       .card-container {
         display: flex;
         flex-wrap: wrap; /* allows cards to wrap */
         gap: 10px; /* space between cards */
         padding: 50px; /* space around */
+        border-radius: 10px;
+      background-color: var(--second-color);
       }
 
       .card,
@@ -56,7 +69,7 @@
         <div class="card">Card 1</div>
         <div class="cardSpecial">Bla.</div>
         <div class="card">Card 3</div>
-        <div class="card"><a href="www.powderguide.com">PG</a></div>
+        <div class="card"><a href="https://powderguide.com">PG</a></div>
       </div>
     </div>
   </body>
