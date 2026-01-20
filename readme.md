@@ -14,6 +14,8 @@
   this ready if the evaluator is weird. also i should work the whole thing
   through in a normal VM
 
+- test if all the make recipes exit without error in any case!
+
 
 ## ressources
 
