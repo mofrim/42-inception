@@ -11,6 +11,7 @@ in
 
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sda";
+  boot.loader.timeout = 0;
 
   # all the software i need
   environment.systemPackages = with pkgs; [
@@ -19,10 +20,11 @@ in
     xorg.xinput
     xorg.setxkbmap
     xorg.xf86inputevdev
+    xorg.xauth
     fluxbox
 
     st-snazzy
-    brave
+    firefox
     gnumake
 
     vim
@@ -37,7 +39,6 @@ in
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFG0nJF3ZMmkgkSAG42VOUyN65w0wSEPeZ+229UiZqW1 fmaurer@42" 
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlhRzDpd+8nwaDMnAeXjpyM/M0RhCA7LYZCEFKHWYI7 mofrim@posteo.de"
       ];
-
       hashedPassword = "PW_GOES_HERE";
       extraGroups = [ "wheel" "docker" ];
     };
@@ -57,7 +58,7 @@ in
         [begin] (fmaurer's 42-Inception-Box)
         [encoding] {UTF-8}
               [exec] (st) {st}
-              [exec] (brave) {brave}
+              [exec] (firefox) {firefox}
               [separator]
               [exit] (Exit)
         [endencoding]
