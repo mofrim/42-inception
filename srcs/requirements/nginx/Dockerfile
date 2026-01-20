@@ -15,4 +15,4 @@ RUN addgroup -g 1001 www && adduser nginx www && chown -R nginx:www /var/www/htm
 
 EXPOSE 443
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx"]
