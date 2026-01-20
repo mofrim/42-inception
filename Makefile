@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2025/10/26 20:58:52 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/01/20 15:15:10 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,6 +59,7 @@ all: $(NAME)
 
 $(NAME): .setup_done
 	$(call log_msg_single,Setup done! Now type \"make run\" or \"make dev\" to start the show!)
+	@+bash -c 'source .inceptionenv'
 
 # real-file target for ensuring make will only run once
 .setup_done:
@@ -155,6 +156,17 @@ else
 	$(call log_msg_end,I hope you enjoyed Inception!)
 endif
 
+quick-run: .setup_done
+ifneq ($(INCEPTION_SHELL),ok)
+	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
+else
+	$(call log_msg_start,Now really going for it... Starting vm_setup!)
+	@+cd vm && ./42_quick_run.sh
+	$(call log_msg_mid,Launching the VM...)
+	@+cd vm && ./2_launch_vm.sh
+	$(call log_msg_end,I hope you enjoyed Inception!)
+endif
+
 #### Direct docker stuff ####
 
 comp:
@@ -213,4 +225,5 @@ fclean:
 
 re: fclean all
 
-.PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx dev run comp comp-down comp-re logs vm-clean sec-clean clean fclean re
+.PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx dev \
+	run comp comp-down comp-re logs vm-clean sec-clean clean fclean re quick-run
