@@ -1,1 +1,0 @@
-loglevel=4 net.ifnames=0 lsm=landlock,yama,bpf
