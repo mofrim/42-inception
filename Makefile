@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/02/05 15:51:56 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/02/05 17:06:22 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -185,17 +185,6 @@ comp-down:
 
 comp-re: clean comp
 
-# FIXME: DEPRECATE or adopt this!
-logs:
-	$(call log_msg_start,nginx logs...)
-	-$(DOCKER) exec -it inc_nginx cat '/var/log/nginx/error.log'
-	-$(DOCKER) exec -it inc_nginx cat '/var/log/nginx/access.log'
-	$(call log_msg_mid,wp logs...)
-	-$(DOCKER) exec -it inc_wp cat '/var/log/php84/error.log'
-	$(call log_msg_mid,wp_db logs...)
-	-$(DOCKER) logs inc_wp_db
-	sudo cat ./wp_db/$$( $(DOCKER) logs inc_wp_db | grep Logging | sed -e "s/^.*'\/var\/lib\/mysql\///g" -e "s/'.$$//g")
-
 #### cleanup recipes ####
 
 vm-clean:
@@ -230,6 +219,7 @@ fclean:
 	rm -f .setup_done
 	$(call log_msg_mid,Even removing .env an vmpw files...)
 	rm -f $(SRCDIR)/.env vm/inception-vmpw
+	@echo
 	$(call log_msg_end, Cleaning up hard... is done!)
 
 re: fclean all
