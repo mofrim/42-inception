@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-# exit if INCEPTION_SHELL is not set AND if we are not being called from
-# Makefile (if we come from Makefile INCEP_TOOLDIR=ok will be set).
-# If both are zero, someone is trying to exec this script directly or sth weird
-# like this.
-if [[ -z "$INCEPTION_SHELL" && -z "$INCEP_TOOLDIR" ]];then
+# INCEP_TOOLDIR will be set either if we are coming from a inception-shell or
+# from our Makefile. Otherwise this tool cannot run.
+if [[ -z "$INCEP_TOOLDIR" ]];then
   echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
   exit 1
 fi
@@ -16,7 +14,8 @@ srcdir=srcs
 
 # TODO: test on school computers
 set +e
-at_school="$(hostname | grep "wolfsburg")"
+at_school="$(hostname | grep 'wolfsburg')"
+on_macmac="$(hostname | grep 'macmac')"
 set -e
 
 # in school we get our secrets straight from $HOME
@@ -42,6 +41,8 @@ logmsg "copying dotenv from $dotenv_src to $srcdir/.env!"
 cp $dotenv_src $srcdir/.env
 if [ $at_school ];then
   sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' $srcdir/.env
+elif [ $on_macmac ]; then
+  sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/mofrim\/c0de\/42\/theCore\/16-inception\/incept/' $srcdir/.env
 fi
 
 logmsg "copying vmpw from $vmpw_src to vm/inception-vmpw!"

@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-# exit if INCEPTION_SHELL is not set AND if we are not being called from
-# Makefile (if we come from Makefile INCEP_TOOLDIR=ok will be set).
-# If both are zero, someone is trying to exec this script directly or sth weird
-# like this.
-if [[ -z "$INCEPTION_SHELL" && -z "$INCEP_TOOLDIR" ]];then
+# INCEP_TOOLDIR will be set either if we are coming from a inception-shell or
+# from our Makefile. Otherwise this tool cannot run.
+if [[ -z "$INCEP_TOOLDIR" ]];then
   echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
   exit 1
 fi
