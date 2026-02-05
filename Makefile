@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/01/20 21:51:53 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/02/05 15:51:56 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,12 +34,19 @@ output_colr_reset =  @$(ECHON) "$(RST)"
 
 # WoooOOooOOoOoow! Make. supports. setting. environment variables. for. all.
 # subshells. amazing.
-export TOOLDIR = $(shell readlink -f ./tools)
+# These Variables are needed for all the setup scripts to run
+export INCEP_TOOLDIR = $(shell readlink -f ./tools)
 
 # TODO: choose this value depending on system, cause on school PCs `-e` does
 # not have an effect.
-ECHO = echo -e
-ECHON = echo -en
+HOST = $(shell hostname)
+ifeq ($(findstring wolfsburg,$(HOST)), wolfsburg)
+	ECHO = echo
+	ECHON = echo -n
+else
+	ECHO = echo -e
+	ECHON = echo -en
+endif
 
 # to be clear here.
 DOCKER = docker
@@ -63,17 +70,12 @@ $(NAME): .setup_done
 
 # real-file target for ensuring make will only run once
 .setup_done:
-ifeq ($(INCEPTION_SHELL),ok)
 	$(call log_msg_start,Alrighty! Running for the first time. Doing setup...)
 	@sleep 0.5
 	$(output_color_grey)
 	@$(MAKE) -s sec-setup
 	@$(MAKE) -s dotenv-vmpw
 	@touch .setup_done && chmod 100 .setup_done
-else
-	$(call log_msg_single,P-L-Z run 'source .inceptionenv' first!)
-	@false
-endif
 
 $(INCEPTION_DOTENV):
 	$(call log_msg_start,Copying in .env from elsewhere...)

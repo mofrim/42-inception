@@ -12,7 +12,7 @@ if [[ "${PWD##*/}" != "vm"  ]];then
   exit 1
 fi
 
-source $TOOLDIR/tools_include.sh
+source $INCEP_TOOLDIR/tools_include.sh
 
 image_url="https://github.com/nix-community/nixos-images/releases/download/nixos-25.05"
 nixos_image="nixos-installer-x86_64-linux.iso"

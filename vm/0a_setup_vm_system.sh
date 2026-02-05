@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-source $TOOLDIR/tools_include.sh
+source $INCEP_TOOLDIR/tools_include.sh
 
 if [[ "${PWD##*/}" != "vm"  ]];then
   logmsg -e "script can only be run from vm-dir."

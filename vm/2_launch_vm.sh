@@ -12,7 +12,7 @@ if [ -n "$VM_INSTALL_SHELL" ];then
   exit
 fi
 
-source $TOOLDIR/tools_include.sh
+source $INCEP_TOOLDIR/tools_include.sh
 
 SHARED_DIR="./inception"
 SRCDIR="../srcs"

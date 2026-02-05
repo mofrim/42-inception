@@ -21,7 +21,7 @@ function shorten_path() {
 }
 
 export INCEPTION_SHELL="ok"
-export TOOLDIR="$inception_root/tools"
+export INCEP_TOOLDIR="$inception_root/tools"
 
 if [[ -z $VM_INSTALL_SHELL && -z $VM_RUN_SHELL ]]; then
   echo

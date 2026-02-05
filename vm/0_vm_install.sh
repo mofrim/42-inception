@@ -12,7 +12,7 @@ if [[ "${PWD##*/}" != "vm"  ]];then
   exit 1
 fi
 
-source $TOOLDIR/tools_include.sh
+source $INCEP_TOOLDIR/tools_include.sh
 
 # first patch the vm-conf.nix with current users UID because we want to have
 # full permissions on inception dir in VM
