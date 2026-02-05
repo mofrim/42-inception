@@ -2,7 +2,7 @@
 
 set -e
 
-if [ -z "$INCEPTION_SHELL"]; then
+if [ -z "$INCEPTION_SHELL" ]; then
   echo -e "\n\e[31mPlease 'source .inceptionenv' in repo-root firt!\e[0m"
   exit 1
 fi
@@ -13,9 +13,6 @@ if [[ "${PWD##*/}" != "vm"  ]];then
 fi
 
 source $TOOLDIR/tools_include.sh
-
-image_url="https://channels.nixos.org/nixos-25.05"
-nixos_image="latest-nixos-minimal-x86_64-linux.iso"
 
 # first patch the vm-conf.nix with current users UID because we want to have
 # full permissions on inception dir in VM
@@ -43,6 +40,12 @@ logmsg "Patching in current ca-cert..."
 sed -i '/CERT_GOES_HERE/r ../secrets/ca-cert.pem' ./vm-conf.nix
 sed -i '/CERT_GOES_HERE/d' ./vm-conf.nix
 
+# image_url="https://channels.nixos.org/nixos-25.05"
+# nixos_image="latest-nixos-minimal-x86_64-linux.iso"
+
+image_url="https://github.com/nix-community/nixos-images/releases/download/nixos-25.11"
+nixos_image="nixos-installer-x86_64-linux.iso"
+
 if [ ! -e $nixos_image ]; then
 	logmsg "nixos-iso not found. downloading!"
 	wget "$image_url/$nixos_image"
@@ -65,18 +68,28 @@ qemu-system-x86_64 \
 	-device e1000,netdev=net0 \
 	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
 
+# FIXME:
+# NEXT: what to do here?!?!
+
 # did not find another way than running a new shell until the vm is completely
 # set up.
-sleep 0.5
-clear
-logmsg "here is you todo-list for the vm:"
-echo
-print_cmds_green ./1_nix_setup.sh
-echo
-logmsg "If you feel like simply run 'killvm' to kill the VM"
+#
+# sleep 0.5
+# clear
+# logmsg "here is you todo-list for the vm:"
+# echo
+# print_cmds_green ./1_nix_setup.sh
+# echo
+# logmsg "If you feel like simply run 'killvm' to kill the VM"
+# export INCEPTION_VM_PID=$!
+# VM_INSTALL_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
+# unset VM_INSTALL_SHELL
+
+logmsg "waiting for vm to boot..."
 export INCEPTION_VM_PID=$!
 VM_INSTALL_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
 unset VM_INSTALL_SHELL
+# ./0a_setup_vm_system.sh
 
 logmsg "Alrighty! Done installing & setting up the Inception VM!"
 

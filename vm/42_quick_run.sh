@@ -67,9 +67,9 @@ qemu-system-x86_64 \
 
 logmsg "waiting for vm to boot..."
 echo -n "Waiting... "
-for cnt in $(seq 1 8); do
+for cnt in $(seq 1 14); do
 	sleep 2
-	echo -n "$((8 - cnt)) "
+	echo -n "$((14 - cnt)) "
 done
 echo -en " -> go!\n"
 VM_INSTALL_SHELL="yo" ./0a_setup_vm_system.sh
