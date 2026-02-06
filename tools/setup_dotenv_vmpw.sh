@@ -20,20 +20,20 @@ set -e
 
 # in school we get our secrets straight from $HOME
 if [ -n "$at_school" ]; then
-  dotenv_src="~/inception-dotenv"
-  vmpw_src="~/inception-vmpw"
+  dotenv_src="$HOME/inception-dotenv"
+  vmpw_src="$HOME/inception-vmpw"
 else
   dotenv_src="../inceptionSecrets/inception-dotenv"
   vmpw_src="../inceptionSecrets/inception-vmpw"
 fi
 
-if [ ! -e $dotenv_src ]; then
+if ! [ -e $dotenv_src ]; then
   logmsg -e "cannot find dotenv. plz copy it to $dotenv_src."
   exit 1
 fi
 
 if [ ! -e $vmpw_src ]; then
-  logmsg -e "cannot find dotenv. plz copy it to $dotenv_src."
+  logmsg -e "cannot find vmpw. plz copy it to $dotenv_src."
   exit 1
 fi
 
