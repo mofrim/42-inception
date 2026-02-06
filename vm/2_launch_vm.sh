@@ -22,9 +22,13 @@ SRCDIR="../srcs"
 if [[ ( ! -e $SHARED_DIR/requirements || ! -e $SHARED_DIR/docker-compose.yml ) \
   && -e $SRCDIR ]]
 then
+	set -x
   logmsg "copying inception to vm-shared dir"
+	mkdir -p $SHARED_DIR
   rm -rf $SHARED_DIR/* && rm -f $SHARED_DIR/.env
-  cp -R $SRCDIR/{*,.*} $SHARED_DIR
+  cp -R $SRCDIR/* $SHARED_DIR
+  cp -R $SRCDIR/.env $SHARED_DIR
+	set +x
 fi
 
 # one last time: make sure DATA_DIR is set correctly for VM!
@@ -37,6 +41,7 @@ if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
     -enable-kvm \
     -smp 2 \
     -m 4G \
+		-vga virtio \
     -drive file=nixos.qcow2,format=qcow2 \
     -virtfs local,path="${SHARED_DIR}",security_model=none,mount_tag=shared \
     -device e1000,netdev=net0 \
