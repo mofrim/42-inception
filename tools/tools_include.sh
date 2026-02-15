@@ -3,6 +3,8 @@ function logmsg () {
   scriptname="$(echo $0 | sed 's/^\(.*\/\)\([a-zA-Z0-9_-]\+\.sh\)$/\2/')"
   if [[ $# -eq 2 && "$1" = "-e" ]]; then
     echo -e "\e[31m[ $scriptname ] $2\e[0m"
+  elif [[ $# -eq 2 && "$1" = "-n" ]]; then
+    echo -ne "\e[36m[ $scriptname ] $2\e[0m"
   elif [ $# -eq 0 ]; then
     echo -e "\e[36m[ $scriptname ]\e[0m"
   else
@@ -46,3 +48,63 @@ function ask_yes_no() {
     esac
   done
 }
+
+# shamelessly stolen and adopted from ysap:
+# https://github.com/bahamas10/ysap/blob/main/code/2026-01-07-spinner/spinner
+#
+function spinner() {
+	# hide the cursor
+	tput civis
+
+	# local chars0=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+	local chars1=(
+		"▐⠂       ▌"
+		"▐⠈       ▌"
+		"▐ ⠂      ▌"
+		"▐ ⠠      ▌"
+		"▐  ⡀     ▌"
+		"▐  ⠠     ▌"
+		"▐   ⠂    ▌"
+		"▐   ⠈    ▌"
+		"▐    ⠂   ▌"
+		"▐    ⠠   ▌"
+		"▐     ⡀  ▌"
+		"▐     ⠠  ▌"
+		"▐      ⠂ ▌"
+		"▐      ⠈ ▌"
+		"▐       ⠂▌"
+		"▐       ⠠▌"
+		"▐       ⡀▌"
+		"▐      ⠠ ▌"
+		"▐      ⠂ ▌"
+		"▐     ⠈  ▌"
+		"▐     ⠂  ▌"
+		"▐    ⠠   ▌"
+		"▐    ⡀   ▌"
+		"▐   ⠠    ▌"
+		"▐   ⠂    ▌"
+		"▐  ⠈     ▌"
+		"▐  ⠂     ▌"
+		"▐ ⠠      ▌"
+		"▐ ⡀      ▌"
+		"▐⠠       ▌"
+	)
+	local skip_back1="\033[1D\033[1D\033[1D\033[1D\033[1D\033[1D\033[1D\033[1D\033[1D\033[1D\033[1D"
+	local c
+	while true; do
+		for c in "${chars1[@]}"; do
+			printf "\033[1;33m%s\033[0m $skip_back1" "$c"
+			sleep .1
+		done
+	done
+}
+
+# same as above spinner function
+function spinner_cleanup() {
+	if [[ -n $SPINNER_PID ]]; then
+		kill "$SPINNER_PID"
+		unset -v SPINNER_PID
+		tput cnorm
+	fi
+}
+
