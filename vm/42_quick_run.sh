@@ -65,13 +65,26 @@ qemu-system-x86_64 \
 	-device e1000,netdev=net0 \
 	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
 
-logmsg "waiting for vm to boot..."
-echo -n "Waiting... "
-for cnt in $(seq 1 14); do
-	sleep 2
-	echo -n "$((14 - cnt)) "
+# yes, ehm, a little over-engineered wait-for-install-vm-to-be-ready handling
+first_loop=1
+while ! ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=1 -o BatchMode=yes -i ~/.ssh/id_ed25519-mofrim -p 5555 root@localhost echo "yo" > /dev/null; do
+	if [ $first_loop -eq 1 ]; then
+		logmsg "VM not yet available...   "
+		logmsg -n	"...waiting -> "
+		trap spinner_cleanup EXIT
+		spinner &
+		SPINNER_PID=$!
+		first_loop=0
+	fi
+	sleep 1
 done
-echo -en " -> go!\n"
+
+# stop spinner
+spinner_cleanup
+
+# and start vm system setup
+echo
+logmsg "VM available!"
 VM_INSTALL_SHELL="yo" ./0a_setup_vm_system.sh
 
 logmsg "Alrighty! Done installing & setting up the Inception VM!"
