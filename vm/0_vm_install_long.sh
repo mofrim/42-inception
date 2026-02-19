@@ -14,9 +14,6 @@ fi
 
 source $INCEP_TOOLDIR/tools_include.sh
 
-image_url="https://github.com/nix-community/nixos-images/releases/download/nixos-25.05"
-nixos_image="nixos-installer-x86_64-linux.iso"
-
 # first patch the vm-conf.nix with current users UID because we want to have
 # full permissions on inception dir in VM
 if [ ! -e ./vm-conf-template.nix ]; then
@@ -43,6 +40,12 @@ logmsg "Patching in current ca-cert..."
 sed -i '/CERT_GOES_HERE/r ../secrets/ca-cert.pem' ./vm-conf.nix
 sed -i '/CERT_GOES_HERE/d' ./vm-conf.nix
 
+# image_url="https://channels.nixos.org/nixos-25.05"
+# nixos_image="latest-nixos-minimal-x86_64-linux.iso"
+
+image_url="https://github.com/nix-community/nixos-images/releases/download/nixos-25.11"
+nixos_image="nixos-installer-x86_64-linux.iso"
+
 if [ ! -e $nixos_image ]; then
 	logmsg "nixos-iso not found. downloading!"
 	wget "$image_url/$nixos_image"
@@ -65,26 +68,18 @@ qemu-system-x86_64 \
 	-device e1000,netdev=net0 \
 	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
 
-# yes, ehm, a little over-engineered wait-for-install-vm-to-be-ready handling
-first_loop=1
-while ! ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=1 -o BatchMode=yes -i ~/.ssh/id_ed25519-mofrim -p 5555 root@localhost echo "yo" > /dev/null; do
-	if [ $first_loop -eq 1 ]; then
-		logmsg "VM not yet available...   "
-		logmsg -n	"...waiting -> "
-		trap spinner_cleanup EXIT
-		spinner &
-		SPINNER_PID=$!
-		first_loop=0
-	fi
-	sleep 1
-done
-
-# stop spinner
-spinner_cleanup
-
-# and start vm system setup
+sleep 0.5
+clear
+logmsg "here is you todo-list for the vm:"
 echo
-logmsg "VM available!"
-VM_INSTALL_SHELL="yo" ./0a_setup_vm_system.sh
+print_cmds_green ./0a_nix_setup_instructions.sh
+echo
+logmsg "If you feel like simply run 'killvm' to kill the VM"
+export INCEPTION_VM_PID=$!
+VM_INSTALL_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
+unset VM_INSTALL_SHELL
+./1_setup_vm_system.sh
 
 logmsg "Alrighty! Done installing & setting up the Inception VM!"
+
+## now ssh into the vm and setup the system...

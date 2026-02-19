@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 let
   home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/refs/heads/release-25.11.tar.gz";
-  inherit (lib) mkDefault;
+  inherit (lib) mkDefault mkForce;
 in
 {
   imports =
@@ -441,36 +441,37 @@ in
   # programs.command-not-found.enable = false;
 
   documentation = {
-    enable = mkDefault false;
-    doc.enable = mkDefault false;
-    info.enable = mkDefault false;
-    man.enable = mkDefault false;
-    nixos.enable = mkDefault false;
+    enable = mkForce false;
+    doc.enable = mkForce false;
+    info.enable = mkForce false;
+    man.enable = mkForce false;
+    nixos.enable = mkForce false;
   };
 
   environment = {
     # Perl is a default package.
-    defaultPackages = mkDefault [ ];
-    stub-ld.enable = mkDefault false;
+    defaultPackages = mkForce [ ];
+    stub-ld.enable = mkForce false;
   };
 
   programs = {
-    command-not-found.enable = mkDefault false;
-    fish.generateCompletions = mkDefault false;
+    command-not-found.enable = mkForce false;
+    fish.generateCompletions = mkForce false;
   };
 
   services = {
-    logrotate.enable = mkDefault false;
-    udisks2.enable = mkDefault false;
+    logrotate.enable = mkForce false;
+    udisks2.enable = mkForce false;
+    speechd.enable = mkForce false;
   };
 
   xdg = {
-    autostart.enable = mkDefault false;
-    icons.enable = mkDefault false;
-    mime.enable = mkDefault false;
-    sounds.enable = mkDefault false;
+    autostart.enable = mkForce false;
+    icons.enable = mkForce false;
+    mime.enable = mkForce false;
+    sounds.enable = mkForce false;
   };
 
   # Minimal system settings
-  system.stateVersion = "25.05";  # Adjust to your NixOS version
+  system.stateVersion = "25.11";  # Adjust to your NixOS version
 }

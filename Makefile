@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/02/05 17:06:22 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/02/19 14:23:40 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -153,23 +153,23 @@ endif
 
 #### VM hot stuff ####
 
-run: .setup_done
+long-run: .setup_done
 ifneq ($(INCEPTION_SHELL),ok)
 	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
 else
 	$(call log_msg_start,Now really going for it... Starting vm_setup!)
-	@cd vm && ./0_vm_install.sh
+	@cd vm && ./0_vm_install_long.sh
 	$(call log_msg_mid,Launching the VM...)
 	@cd vm && ./2_launch_vm.sh
 	$(call log_msg_end,I hope you enjoyed Inception!)
 endif
 
-quick-run: .setup_done
+run: .setup_done
 ifneq ($(INCEPTION_SHELL),ok)
 	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
 else
 	$(call log_msg_start,Now really going for it... Starting vm_setup!)
-	@+cd vm && ./42_quick_run.sh
+	@+cd vm && ./0_vm_install.sh
 	$(call log_msg_mid,Launching the VM...)
 	@+cd vm && ./2_launch_vm.sh
 	$(call log_msg_end,I hope you enjoyed Inception!)
@@ -225,4 +225,4 @@ fclean:
 re: fclean all
 
 .PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx dev \
-	run comp comp-down comp-re logs vm-clean sec-clean clean fclean re quick-run
+	run comp comp-down comp-re logs vm-clean sec-clean clean fclean re long-run
