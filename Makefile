@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/02/19 14:23:40 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/02/19 14:35:15 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -205,7 +205,7 @@ sec-clean:
 clean:
 	$(call log_msg_start,Cleaning runtime docker stuff...)
 	$(output_color_grey)
-	sudo rm -rf wp_data wp_db && mkdir wp_data wp_db
+	rm -rf wp_data wp_db && mkdir wp_data wp_db
 	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
 	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
 	$(call log_msg_end,Done.)

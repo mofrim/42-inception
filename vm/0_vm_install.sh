@@ -2,8 +2,8 @@
 
 set -e
 
-if [ -z "$INCEPTION_SHELL" ]; then
-  echo -e "\n\e[31mPlease 'source .inceptionenv' in repo-root firt!\e[0m"
+if [[ -z "$INCEP_TOOLDIR" ]];then
+  echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
   exit 1
 fi
 
@@ -14,7 +14,7 @@ fi
 
 source $INCEP_TOOLDIR/tools_include.sh
 
-image_url="https://fridocloud.de/public.php/dav/files/QZgZQEpSZAqeKeT"
+image_url="https://fridocloud.de/public.php/dav/files/pkTBdZ4pgneq3Ld"
 nixos_image="mininixos-inception.iso"
 
 # first patch the vm-conf.nix with current users UID because we want to have
@@ -45,7 +45,7 @@ sed -i '/CERT_GOES_HERE/d' ./vm-conf.nix
 
 if [ ! -e $nixos_image ]; then
 	logmsg "nixos-iso not found. downloading!"
-	curl -O "$image_url"
+	curl -o mininixos-inception.iso "$image_url"
 fi
 
 if [ ! -e ./nixos.qcow2 ]; then
@@ -63,11 +63,12 @@ qemu-system-x86_64 \
   -cdrom ./$nixos_image \
   -drive file=nixos.qcow2,format=qcow2 \
 	-device e1000,netdev=net0 \
-	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
+	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 \
+	&> /dev/null &
 
 # yes, ehm, a little over-engineered wait-for-install-vm-to-be-ready handling
 first_loop=1
-while ! ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=1 -o BatchMode=yes -i ~/.ssh/id_ed25519-mofrim -p 5555 root@localhost echo "yo" > /dev/null; do
+while ! ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=1 -o BatchMode=yes $SSH_KEYOPT -p 5555 root@localhost echo "yo" > /dev/null; do
 	if [ $first_loop -eq 1 ]; then
 		logmsg "VM not yet available...   "
 		logmsg -n	"...waiting -> "

@@ -108,3 +108,10 @@ function spinner_cleanup() {
 	fi
 }
 
+# set optional ssh keyfile option depending on location (school / not
+# school)
+if [ -n "$(hostname | grep wolfsburg)" ]; then
+	export SSH_KEYOPT=""
+else
+	export SSH_KEYOPT="-i ~/.ssh/id_ed25519-mofrim"
+fi

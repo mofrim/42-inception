@@ -2,9 +2,10 @@
 
 set -e
 
-if [ -z "$INCEPTION_SHELL" ]; then
-  echo -e "\n\e[31mPlease 'source .inceptionenv' in repo-root firt!\e[0m"
+if [[ -z "$INCEP_TOOLDIR" ]];then
+  echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
   exit 1
+fi
 fi
 
 if [[ "${PWD##*/}" != "vm"  ]];then
@@ -66,7 +67,8 @@ qemu-system-x86_64 \
   -cdrom ./$nixos_image \
   -drive file=nixos.qcow2,format=qcow2 \
 	-device e1000,netdev=net0 \
-	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &
+	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 \
+	&> /dev/null &
 
 sleep 0.5
 clear

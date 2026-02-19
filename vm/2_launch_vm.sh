@@ -8,8 +8,13 @@ if [[ "${PWD##*/}" != "vm"  ]];then
 fi
 
 if [ -n "$VM_INSTALL_SHELL" ];then
-  logmsg "still in VM_INSTALL_SHELL. plz hit ctrl-d to escape from shell-hell."
+  logmsg "still in VM_INSTALL_SHELL. plz hit ctrl-d to avoid from shell-hell."
   exit
+fi
+
+if [[ -z "$INCEP_TOOLDIR" ]];then
+  echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
+  exit 1
 fi
 
 source $INCEP_TOOLDIR/tools_include.sh
