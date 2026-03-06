@@ -168,8 +168,11 @@ in
         bashrcExtra = ''
           echo "Welcome to the Inception VM :)"
           echo
-          echo "- run 'make' to start the inception show"
-          echo "- run 'ciao' to shutdown vm"
+          echo "* run 'ciao' to shutdown vm"
+          echo "* the inception show starts in"
+          echo "  "
+          for ((i=1; i<5; i++)); do echo "$i " && sleep 1; done
+          make
         '';
       };
     };
