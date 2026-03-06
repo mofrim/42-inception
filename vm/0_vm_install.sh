@@ -64,7 +64,7 @@ qemu-system-x86_64 \
   -drive file=nixos.qcow2,format=qcow2 \
 	-device e1000,netdev=net0 \
 	-netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 \
-	&> /dev/null &
+	&> /dev/null & disown
 
 # yes, ehm, a little over-engineered wait-for-install-vm-to-be-ready handling
 first_loop=1
