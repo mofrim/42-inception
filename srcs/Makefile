@@ -10,6 +10,6 @@ log_msg_single = @echo -e "\n$(MSGOPN) $(1) $(MSGEND)\n"
 all:
 	$(call log_msg_single,Finally! Launching all Inception services...)
 	@sleep 0.5
-	docker compose up --build
+	docker compose up -d --build
 
 .PHONY: all
