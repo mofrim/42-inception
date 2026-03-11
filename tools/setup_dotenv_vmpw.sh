@@ -16,6 +16,7 @@ srcdir=srcs
 set +e
 at_school="$(hostname | grep 'wolfsburg')"
 on_macmac="$(hostname | grep 'macmac')"
+on_spock="$(hostname | grep 'spock')"
 set -e
 
 # in school we get our secrets straight from $HOME
@@ -41,8 +42,8 @@ logmsg "copying dotenv from $dotenv_src to $srcdir/.env!"
 cp $dotenv_src $srcdir/.env
 if [ $at_school ];then
   sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/fmaurer\/data/' $srcdir/.env
-elif [ $on_macmac ]; then
-  sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/mofrim\/c0de\/42\/theCore\/16-inception\/incept/' $srcdir/.env
+elif [[ $on_macmac || $on_spock ]]; then
+  sed -i 's/^DATA_DIR.*$/DATA_DIR=\/home\/mofrim\/c0de\/42\/CC\/16-inception\/incept/' $srcdir/.env
 fi
 
 logmsg "copying vmpw from $vmpw_src to vm/inception-vmpw!"
