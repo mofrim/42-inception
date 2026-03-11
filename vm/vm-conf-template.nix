@@ -61,7 +61,7 @@ in
               [exec] (st) {st}
               [exec] (firefox) {firefox}
               [separator]
-              [exit] (Exit)
+              [exec] (ciao!) {sudo shutdown -h now}
         [endencoding]
         [end]
       '';
@@ -170,10 +170,34 @@ in
           echo
           echo "* run 'ciao' to shutdown vm"
           echo "* the inception show starts in"
-          echo "  "
-          for ((i=1; i<5; i++)); do echo "$i " && sleep 1; done
+          echo -n "  -> "
+          for ((i=3; i>=0; i--)); do echo -n "$i " && sleep 1; done
+          echo "\o/"
           make
         '';
+      };
+      firefox = {
+        enable = true;
+        profiles."default" = {
+          settings = {
+            "browser.startup.homepage" = "https://fmaurer.42.fr";
+            "browser.newtabpage.pinned" = [{
+              title = "fmaurer42";
+              url = "https://fmaurer.42.fr";
+            }];
+          };
+          bookmarks = {
+            force = true;
+            settings = [
+              {
+                name = "fmaurer.42.fr";
+                tags = [ "42" ];
+                keyword = "42";
+                url = "https://fmaurer.42.fr";
+              }
+            ];
+          };
+        };
       };
     };
   };
@@ -300,7 +324,7 @@ in
     Option "Tapping" "on"
 
     Option "TappingDragLock" "on"
-    Option "DisableWhileTyping" "off"
+    Option "DisableWhileTyping" "on"
 
     EndSection
 
@@ -415,21 +439,8 @@ in
   # docker support
   virtualisation.docker.enable = true;
 
-  # # vm-specific settings
-  # virtualisation.vmVariant = {
-  #   virtualisation = {
-  #     memorySize = 4096;
-  #     cores = 2;
-  #     diskSize = 8192;  # 8GB - adjust as needed for minimal size
-  #   };
-  # };
-  #
-  # # for being able to connect to vm via ssh on port localhost:2222 from host
-  # virtualisation.forwardPorts = [
-  #   { from = "host"; host.port = 2222; guest.port = 22; }
-  # ];
-
   networking = {
+    firewall.enable = false;
     hostName = "inception-vm";
     networkmanager.enable = false;  # Keep it minimal
     useDHCP = true;
@@ -437,11 +448,6 @@ in
       "127.0.0.1" = ["fmaurer.42.fr"];
     };
   };
-
-  # disable a bit more stuff
-  # documentation.enable = false;
-  # documentation.nixos.enable = false;
-  # programs.command-not-found.enable = false;
 
   documentation = {
     enable = mkForce false;
