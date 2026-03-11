@@ -9,8 +9,8 @@ services:
       - "443:443"
     healthcheck:
       test: curl -kf https://fmaurer.42.fr
-      interval: 30s
-      timeout: 10s
+      interval: 15s
+      timeout: 3s
       retries: 3
       start_period: 5s
     depends_on:
@@ -54,12 +54,12 @@ services:
       WP_CFG_LOGGED_IN_SALT: ${WP_CFG_LOGGED_IN_SALT}
       WP_CFG_NONCE_SALT: ${WP_CFG_NONCE_SALT}
     healthcheck:
-      # test: curl -f http://localhost/wp/wp-admin/install.php
-      test: ls /
-      interval: 30s
-      timeout: 10s
+      test: SCRIPT_FILENAME=/ping.php REQUEST_METHOD=GET cgi-fcgi -bind -connect localhost:9000 | grep 'pong' || exit 1
+      # test: ls /
+      interval: 15s
+      timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 5s
     networks:
       - inception_net
 
@@ -76,10 +76,10 @@ services:
       - wp_db:/var/lib/mysql
     healthcheck:
       test: mariadb -h localhost -u $$WP_DB_USER --password=$$WP_DB_PW -e "SELECT 1;"
+      interval: 15s
       timeout: 5s
-      interval: 30s
-      retries: 5
-      start_period: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - inception_net
 
