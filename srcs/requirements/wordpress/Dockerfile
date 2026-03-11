@@ -33,6 +33,7 @@ RUN apk update && apk upgrade && apk add --no-cache \
 			imagemagick \
 			imagemagick-jpeg \
 			curl \
+			fcgi \
 			tar \
 			bash \
 			gzip;
@@ -74,6 +75,9 @@ COPY ./conf/php-fpm.conf /etc/php82/php-fpm.d/wordpress.conf
 COPY wp-entrypoint.sh /wp-entrypoint.sh
 RUN chmod 700 /wp-entrypoint.sh;
 ENTRYPOINT ["/wp-entrypoint.sh"]
+
+COPY ping.php /ping.php
+RUN chown incept_fpm:www /ping.php && chmod 700 /ping.php
 
 # run php-fpm in foreground
 CMD ["php-fpm82", "-F"]
