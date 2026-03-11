@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/03/11 17:37:01 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/11 20:28:05 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -86,7 +86,7 @@ $(INCEPTION_DOTENV):
 
 $(INCEPTION_VMPW): $(INCEPTION_DOTENV)
 
-dotenv-vmpw: $(INCEPTION_DOTENV) $(INCEPTION_VMPW)
+dotenv-vmpw: $(INCEPTION_VMPW)
 
 # INSIGHT: wow! this is really crappy! the ifeq (...) statement will be
 # evaluated _anytime_ make is called with some other rule!
@@ -177,10 +177,10 @@ endif
 
 #### Direct docker stuff ####
 
-dock:
+dock: .setup_done
 	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml up
 
-dock-build:
+dock-build: .setup_done
 	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml up --build
 
 dock-down:
@@ -191,7 +191,7 @@ dock-re: dock-clean dock-build
 dock-clean:
 	$(call log_msg_start,Cleaning runtime docker stuff...)
 	$(output_color_grey)
-	sudo rm -rif wp_data wp_db && mkdir wp_data wp_db
+	sudo rm -rf wp_data wp_db && mkdir wp_data wp_db
 	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
 	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
 	$(call log_msg_end,Done.)
