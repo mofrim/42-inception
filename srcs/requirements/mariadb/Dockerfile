@@ -1,7 +1,7 @@
 FROM alpine:3.22
 
 # client is needed for the entrypoint
-RUN apk add --no-cache mariadb mariadb-client;
+RUN apk add --no-cache mariadb mariadb-client bash;
 
 # after running this there is also a user named 'mysql' and the dir
 # `/var/lib/mysql` owned by this user on the system
@@ -13,10 +13,12 @@ COPY mariadb.cnf /etc/mysql
 COPY ./ssl/*.pem /etc/mysql/ssl/
 RUN chown -R mysql:root /etc/mysql/ssl/;
 
+RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld;
+
 COPY mariadb-entrypoint.sh /mariadb-entrypoint.sh
 RUN chmod 700 /mariadb-entrypoint.sh;
 ENTRYPOINT ["/mariadb-entrypoint.sh"]
 
 # launching mariadb using `mariadbd-safe` is the recommended way for
 # non-system-service use.
-CMD ["mariadbd-safe"]
+CMD ["mariadbd"]

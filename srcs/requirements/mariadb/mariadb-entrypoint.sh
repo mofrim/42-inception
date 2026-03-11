@@ -88,6 +88,11 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 		entry_msg "MariaDB initialization complete"
 fi
 
+# if [ ! -e /run/mysqld ]; then
+# 	entry_msg "Creating /run/mysqld dir"
+# 	mkdir -p /run/mysqld
+# fi
+
 # start MariaDB with the provided arguments
 entry_msg "Starting MariaDB server..."
 

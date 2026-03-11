@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/02/19 14:35:15 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/11 17:37:01 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -148,7 +148,7 @@ ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
 	$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
 else
 	$(call log_msg_mid,Alrighty! Running docker compose up!)
-	cd $(SRCDIR) && docker compose up --build
+	@$(MAKE) -s dock
 endif
 
 #### VM hot stuff ####
@@ -177,13 +177,24 @@ endif
 
 #### Direct docker stuff ####
 
-comp:
+dock:
+	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml up
+
+dock-build:
 	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml up --build
 
-comp-down:
+dock-down:
 	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml down -v
 
-comp-re: clean comp
+dock-re: dock-clean dock-build
+
+dock-clean:
+	$(call log_msg_start,Cleaning runtime docker stuff...)
+	$(output_color_grey)
+	sudo rm -rif wp_data wp_db && mkdir wp_data wp_db
+	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
+	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
+	$(call log_msg_end,Done.)
 
 #### cleanup recipes ####
 
@@ -202,18 +213,10 @@ sec-clean:
 	rm -f $(NGINX_DIR)/conf/*.pem
 	rm -rf secrets/*
 
-clean:
-	$(call log_msg_start,Cleaning runtime docker stuff...)
-	$(output_color_grey)
-	rm -rf wp_data wp_db && mkdir wp_data wp_db
-	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
-	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
-	$(call log_msg_end,Done.)
-
-fclean:
+fclean: dock-clean
 	$(call log_msg_start, Cleaning up hard...)
 	@$(MAKE) -s vm-clean
-	@$(MAKE) -s clean
+	@$(MAKE) -s dock-clean
 	@$(MAKE) -s sec-clean
 	$(call log_msg_mid,Removing setup lockfile...)
 	rm -f .setup_done
@@ -225,4 +228,5 @@ fclean:
 re: fclean all
 
 .PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx dev \
-	run comp comp-down comp-re logs vm-clean sec-clean clean fclean re long-run
+	run dock dock-down dock-re dock-clean dock-build logs vm-clean sec-clean \
+	fclean re long-run

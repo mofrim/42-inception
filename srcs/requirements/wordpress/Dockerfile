@@ -75,4 +75,5 @@ COPY wp-entrypoint.sh /wp-entrypoint.sh
 RUN chmod 700 /wp-entrypoint.sh;
 ENTRYPOINT ["/wp-entrypoint.sh"]
 
+# run php-fpm in foreground
 CMD ["php-fpm82", "-F"]

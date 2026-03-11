@@ -7,8 +7,15 @@ services:
       - wp_data:/var/www/html/wp
     ports:
       - "443:443"
+    healthcheck:
+      test: curl -kf https://fmaurer.42.fr
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
     depends_on:
-      - wp
+      wp:
+        condition: service_healthy
     # MAGIC! setting a network alias fmaurer.42.fr -> nginx-container.
     # this makes WP-sitehealth happy finally
     networks:
@@ -16,26 +23,13 @@ services:
         aliases:
           - fmaurer.42.fr
 
-  db:
-    container_name: inc_wp_db
-    build: ./requirements/mariadb
-    restart: unless-stopped
-    environment:
-      MARIA_ROOT_PW: ${MARIA_ROOT_PW}
-      MARIA_DB: ${MARIA_DB}
-      MARIA_USER: ${MARIA_USER}
-      MARIA_USER_PW: ${MARIA_USER_PW}
-    volumes:
-      - wp_db:/var/lib/mysql
-    networks:
-      - inception_net
-
   wp:
     container_name: inc_wp
     build: ./requirements/wordpress/
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - wp_data:/var/www/html/wp
     environment:
@@ -59,8 +53,36 @@ services:
       WP_CFG_SECURE_AUTH_SALT: ${WP_CFG_SECURE_AUTH_SALT}
       WP_CFG_LOGGED_IN_SALT: ${WP_CFG_LOGGED_IN_SALT}
       WP_CFG_NONCE_SALT: ${WP_CFG_NONCE_SALT}
+    healthcheck:
+      # test: curl -f http://localhost/wp/wp-admin/install.php
+      test: ls /
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - inception_net
+
+  db:
+    container_name: inc_db
+    build: ./requirements/mariadb
+    restart: unless-stopped
+    environment:
+      MARIA_ROOT_PW: ${MARIA_ROOT_PW}
+      MARIA_DB: ${MARIA_DB}
+      MARIA_USER: ${MARIA_USER}
+      MARIA_USER_PW: ${MARIA_USER_PW}
+    volumes:
+      - wp_db:/var/lib/mysql
+    healthcheck:
+      test: mariadb -h localhost -u $$WP_DB_USER --password=$$WP_DB_PW -e "SELECT 1;"
+      timeout: 5s
+      interval: 30s
+      retries: 5
+      start_period: 10s
+    networks:
+      - inception_net
+
 
 networks:
   inception_net:
