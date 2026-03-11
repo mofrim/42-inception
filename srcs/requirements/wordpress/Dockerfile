@@ -38,6 +38,8 @@ RUN apk update && apk upgrade && apk add --no-cache \
 			bash \
 			gzip;
 
+# setting GID explicitly here bc we want to keep them in sync across all
+# containers
 RUN addgroup -g 1001 www && adduser -D -G www incept_fpm;
 
 # download and extract WP  && set appropriate permissions. not using

@@ -11,7 +11,8 @@ COPY conf/server-key.pem /etc/nginx/ssl/
 
 COPY ./index.html /var/www/html
 
-RUN addgroup -g 1001 www && adduser nginx www && chown -R nginx:www /var/www/html;
+RUN addgroup -g 1001 www && adduser nginx www \
+			&& chown -R nginx:www /var/www/html;
 
 EXPOSE 443
 
