@@ -84,6 +84,7 @@ fi
 # alias for otherwise long command
 # NOTE: using `--url="${DOMAIN_NAME}` with _every_ wp-cli command to avoid
 # Warning that HTTP_HOST is not set
+# the full command will be: wp --path=/var/www/html/wp --url=fmaurer.42.fr
 wp_cmd="wp --path=$wp_dir --url=$DOMAIN_NAME"
 
 if ! $wp_cmd core is-installed --url="$DOMAIN_NAME"; then
@@ -96,6 +97,12 @@ if ! $wp_cmd core is-installed --url="$DOMAIN_NAME"; then
   # making the site even healthier with these two:
   $wp_cmd option update siteurl "https://$DOMAIN_NAME" --allow-root
   $wp_cmd option update home "https://$DOMAIN_NAME" --allow-root
+
+	# cleaning up for good site health
+	$wp_cmd theme delete twentytwentyfour
+	$wp_cmd theme delete twentytwentythree
+	$wp_cmd plugin delete akismet
+	$wp_cmd plugin delete hello
 else
   entry_msg "alrighty, wp is already setup. nothing to do here."
 fi
