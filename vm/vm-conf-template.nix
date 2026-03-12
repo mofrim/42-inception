@@ -146,7 +146,7 @@ in
       '';
     };
     home = {
-      stateVersion = "25.05";
+      stateVersion = "25.11";
       shellAliases = {
         "cd.." = "cd ..";
         "ciao" = "sudo shutdown -h now";
@@ -183,7 +183,7 @@ in
       };
       firefox = {
         enable = true;
-        profiles."default" = {
+        profiles.default = {
           settings = {
             "browser.startup.homepage" = "https://fmaurer.42.fr";
             "browser.newtabpage.pinned" = [{
@@ -195,10 +195,20 @@ in
             force = true;
             settings = [
               {
-                name = "fmaurer.42.fr";
-                tags = [ "42" ];
-                keyword = "42";
-                url = "https://fmaurer.42.fr";
+                name = "Toolbar";
+                toolbar = true;
+                bookmarks = [
+                  {
+                    name = "fmaurer.42.fr";
+                    tags = [ "42" ];
+                    url = "https://fmaurer.42.fr";
+                  }
+                  {
+                    name = "wp-admin";
+                    tags = [ "42" ];
+                    url = "https://fmaurer.42.fr/wp-admin";
+                  }
+                ];
               }
             ];
           };
