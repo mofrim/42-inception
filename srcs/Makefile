@@ -11,5 +11,6 @@ all:
 	$(call log_msg_single,Finally! Launching all Inception services...)
 	@sleep 0.5
 	docker compose up -d --build
+	firefox --setDefaultBrowser --first-startup "https://fmaurer.42.fr" &
 
 .PHONY: all
