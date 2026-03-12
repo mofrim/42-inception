@@ -5,30 +5,28 @@ FROM alpine:3.22
 #             Process Manager
 # you're welcome ;) 
 
-# choosing php82 here because:
-# https://make.wordpress.org/hosting/2025/04/16/wordpress-6-8-server-compatibility/
-
 # this php-dependency list is highly recommended by:
 # https://make.wordpress.org/hosting/handbook/server-environment/#php-extensions
 # 
 # *additionally*, in order to have jpeg support we *need* imagemagick-jpeg as
 # the imagemagick package on alpine seems to be kept extra slim.
 RUN apk update && apk upgrade && apk add --no-cache \
-			php82 \
-			php82-fpm \
-			php82-phar \
-			php82-mysqli \
-			php82-curl \
-			php82-dom \
-			php82-exif \
-			php82-fileinfo \
-			php82-pecl-igbinary \
-			php82-pecl-imagick \
-			php82-intl \
-			php82-mbstring \
-			php82-openssl \
-			php82-xml \
-			php82-zip \
+			php83 \
+			php83-fpm \
+			php83-phar \
+			php83-mysqli \
+			php83-curl \
+			php83-dom \
+			php83-exif \
+			php83-fileinfo \
+			php83-pecl-igbinary \
+			php83-pecl-imagick \
+			php83-intl \
+			php83-mbstring \
+			php83-openssl \
+			php83-xml \
+			php83-zip \
+			php83-iconv \
 			mariadb-client \
 			imagemagick \
 			imagemagick-jpeg \
@@ -46,9 +44,9 @@ RUN addgroup -g 1001 www && adduser -D -G www incept_fpm;
 # `latest.tar.gz` here for better reproducibility
 RUN mkdir -p /var/www/html/wp && \
 			cd /var/www/html/wp && \
-			curl -O https://wordpress.org/wordpress-6.8.3.tar.gz && \
-			tar -xzvf wordpress-6.8.3.tar.gz --strip-components=1 && \
-			rm wordpress-6.8.3.tar.gz && \
+			curl -O https://wordpress.org/wordpress-6.9.4.tar.gz && \
+			tar -xzvf wordpress-6.9.4.tar.gz --strip-components=1 && \
+			rm wordpress-6.9.4.tar.gz && \
 			chown -R incept_fpm:www /var/www/html/wp && \
 			chmod -R 755 /var/www/html/wp && \
 			chmod -R 775 /var/www/html/wp/wp-content;
@@ -57,9 +55,9 @@ RUN mkdir -p /var/www/html/wp && \
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
 			chmod +x wp-cli.phar && \
 			mv wp-cli.phar /usr/local/bin/wp && \
-			ln -s /usr/bin/php82 /usr/local/bin/php;
+			ln -s /usr/bin/php83 /usr/local/bin/php;
 
-RUN rm /etc/php82/php-fpm.d/www.conf;
+RUN rm /etc/php83/php-fpm.d/www.conf;
 
 # copy tux ;)
 COPY ./my-home.html /var/www/html/wp/wp-content/themes/twentytwentyfive/templates/home.html
@@ -71,7 +69,7 @@ COPY ./mariadb-client.cnf /etc/mysql/mariadb.conf.d/50-mysql-clients.cnf
 COPY ./mysql/*.pem /etc/mysql/ssl/
 
 # copy custom PHP-FPM config
-COPY ./conf/php-fpm.conf /etc/php82/php-fpm.d/wordpress.conf
+COPY ./conf/php-fpm.conf /etc/php83/php-fpm.d/wordpress.conf
 
 # create entrypoint script
 COPY wp-entrypoint.sh /wp-entrypoint.sh
@@ -79,7 +77,7 @@ RUN chmod 700 /wp-entrypoint.sh;
 ENTRYPOINT ["/wp-entrypoint.sh"]
 
 COPY ping.php /ping.php
-RUN chown incept_fpm:www /ping.php && chmod 700 /ping.php
+RUN chown incept_fpm:www /ping.php && chmod 700 /ping.php;
 
 # run php-fpm in foreground
-CMD ["php-fpm82", "-F"]
+CMD ["php-fpm83", "-F"]

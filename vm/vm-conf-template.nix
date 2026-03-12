@@ -23,6 +23,7 @@ in
     xorg.xf86inputevdev
     xorg.xauth
     fluxbox
+    xrandr
 
     st-snazzy
     firefox
@@ -169,11 +170,15 @@ in
           echo "Welcome to the Inception VM :)"
           echo
           echo "* run 'ciao' to shutdown vm"
-          echo "* the inception show starts in"
-          echo -n "  -> "
-          for ((i=3; i>=0; i--)); do echo -n "$i " && sleep 1; done
-          echo "\o/"
-          make
+          echo "* have fun!"
+          if [ ! -e ~/.notfirstrun ]; then
+            touch ~/.notfirstrun
+            echo "* the inception show starts in"
+            echo -n "  -> "
+            for ((i=3; i>=0; i--)); do echo -n "$i " && sleep 1; done
+            echo "\o/"
+            make
+          fi
         '';
       };
       firefox = {
@@ -352,20 +357,10 @@ in
     Monitor "Monitor[0]"
 
     SubSection "Display"
-    Depth 8
-    Modes "1280×720" "1024x768"
-
-    EndSubSection
-    SubSection "Display"
-    Depth 16
-    Modes "1280×720" "1024x768"
-
-    EndSubSection
-    SubSection "Display"
     Depth 24
-    Modes "1280×720" "1024x768"
-
+    Modes "1680x1050" "1440x900"
     EndSubSection
+
     EndSection
   '';
 
@@ -472,6 +467,7 @@ in
     logrotate.enable = mkForce false;
     udisks2.enable = mkForce false;
     speechd.enable = mkForce false;
+    pipewire.enable = mkForce false;
   };
 
   xdg = {

@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/03/11 20:28:05 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/12 14:39:17 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,6 +53,7 @@ DOCKER = docker
 
 SRCDIR = srcs
 
+SEC_DIR = secrets
 REQ_DIR	=	$(SRCDIR)/requirements
 WP_DIR	=	$(REQ_DIR)/wordpress
 MARIA_DIR	=	$(REQ_DIR)/mariadb
@@ -88,9 +89,14 @@ $(INCEPTION_VMPW): $(INCEPTION_DOTENV)
 
 dotenv-vmpw: $(INCEPTION_VMPW)
 
+$(SEC_DIR):
+	$(output_color_grey)
+	mkdir -p $(SEC_DIR)
+	$(output_colr_reset)
+
 # INSIGHT: wow! this is really crappy! the ifeq (...) statement will be
 # evaluated _anytime_ make is called with some other rule!
-sec-setup:
+sec-setup: $(SEC_DIR)
 ifeq ($(shell tools/check_sec.sh),ok)
 	$(call log_msg_end,Secret setup already done. Skipping.)
 else
@@ -144,7 +150,7 @@ sec-nginx:
 dev: .setup_done
 	$(call log_msg_start,Okay calling docker compose up directly!)
 	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
-ifeq ($(shell ping -c 1 fmaurer.42.fr &> /dev/null || echo "nope"), nope)
+ifeq ($(shell ping -q -c 1 fmaurer.42.fr 2> /dev/null || echo "nope"), nope)
 	$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
 else
 	$(call log_msg_mid,Alrighty! Running docker compose up!)
@@ -177,30 +183,34 @@ endif
 
 #### Direct docker stuff ####
 
+dev: dock-build
+
 dock: .setup_done
-	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml up
+	cd $(SRCDIR) && $(DOCKER) compose -p "inc" up
 
 dock-build: .setup_done
-	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml up --build
+	cd $(SRCDIR) && $(DOCKER) compose -p "inc" up --build
 
 dock-down:
-	$(DOCKER) compose -f ./$(SRCDIR)/docker-compose.yml down -v
+	cd $(SRCDIR) && $(DOCKER) compose -p "inc" down -v
 
 dock-re: dock-clean dock-build
 
 dock-clean:
 	$(call log_msg_start,Cleaning runtime docker stuff...)
 	$(output_color_grey)
-	sudo rm -rf wp_data wp_db && mkdir wp_data wp_db
+	# FIXME: paths will depend on INSCHOOL or Not
+	# rm -rf wp_data wp_db && mkdir wp_data wp_db
 	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
 	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
+	-$(DOCKER) network rm -f inception.net
 	$(call log_msg_end,Done.)
 
 #### cleanup recipes ####
 
 vm-clean:
 	$(call log_msg_start,Cleaning up vm-files for a fresh start...)
-	rm -rf vm/inception/{*,.*}
+	rm -rf vm/inception
 	rm -f vm/nixos.qcow2
 	rm -f vm/vm-conf.nix
 	$(call log_msg_end,Done.)
@@ -211,9 +221,9 @@ sec-clean:
 	rm -f $(WP_DIR)/mysql/*.pem
 	rm -f $(MARIA_DIR)/ssl/*.pem
 	rm -f $(NGINX_DIR)/conf/*.pem
-	rm -rf secrets/*
+	rm -rf secrets
 
-fclean: dock-clean
+fclean:
 	$(call log_msg_start, Cleaning up hard...)
 	@$(MAKE) -s vm-clean
 	@$(MAKE) -s dock-clean
@@ -227,6 +237,6 @@ fclean: dock-clean
 
 re: fclean all
 
-.PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx dev \
-	run dock dock-down dock-re dock-clean dock-build logs vm-clean sec-clean \
-	fclean re long-run
+.PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx run \
+	dock dock-down dock-re dock-clean dock-build logs vm-clean sec-clean fclean \
+	re long-run dev

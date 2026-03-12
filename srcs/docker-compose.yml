@@ -1,6 +1,7 @@
 services:
   nginx:
-    container_name: inc_nginx
+    container_name: inc-nginx
+    image: inc-nginx
     build: ./requirements/nginx
     restart: unless-stopped
     volumes:
@@ -19,52 +20,53 @@ services:
     # MAGIC! setting a network alias fmaurer.42.fr -> nginx-container.
     # this makes WP-sitehealth happy finally
     networks:
-      inception_net:
+      inception.net:
         aliases:
           - fmaurer.42.fr
 
   wp:
-    container_name: inc_wp
-    build: ./requirements/wordpress/
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - wp_data:/var/www/html/wp
-    environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      WP_SITE_TITLE: ${WP_SITE_TITLE}
-      WP_DB_HOST: ${WP_DB_HOST}
-      WP_DB_USER: ${WP_DB_USER}
-      WP_DB_PW: ${WP_DB_PW}
-      WP_DB_NAME: ${WP_DB_NAME}
-      WP_ADMIN_USER: ${WP_ADMIN_USER}
-      WP_ADMIN_PW: ${WP_ADMIN_PW}
-      WP_ADMIN_MAIL: ${WP_ADMIN_MAIL}
-      WP_USER2: ${WP_USER2}
-      WP_USER2_PW: ${WP_USER2_PW}
-      WP_USER2_MAIL: ${WP_USER2_MAIL}
-      WP_CFG_AUTH_KEY: ${WP_CFG_AUTH_KEY}
-      WP_CFG_SECURE_AUTH_KEY: ${WP_CFG_SECURE_AUTH_KEY}
-      WP_CFG_LOGGED_IN_KEY: ${WP_CFG_LOGGED_IN_KEY}
-      WP_CFG_NONCE_KEY: ${WP_CFG_NONCE_KEY}
-      WP_CFG_AUTH_SALT: ${WP_CFG_AUTH_SALT}
-      WP_CFG_SECURE_AUTH_SALT: ${WP_CFG_SECURE_AUTH_SALT}
-      WP_CFG_LOGGED_IN_SALT: ${WP_CFG_LOGGED_IN_SALT}
-      WP_CFG_NONCE_SALT: ${WP_CFG_NONCE_SALT}
-    healthcheck:
-      test: SCRIPT_FILENAME=/ping.php REQUEST_METHOD=GET cgi-fcgi -bind -connect localhost:9000 | grep 'pong' || exit 1
-      # test: ls /
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-    networks:
-      - inception_net
+      container_name: inc-wp
+      image: inc-wp
+      build: ./requirements/wordpress/
+      restart: unless-stopped
+      depends_on:
+        db:
+          condition: service_healthy
+      volumes:
+        - wp_data:/var/www/html/wp
+      environment:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        WP_SITE_TITLE: ${WP_SITE_TITLE}
+        WP_DB_HOST: ${WP_DB_HOST}
+        WP_DB_USER: ${WP_DB_USER}
+        WP_DB_PW: ${WP_DB_PW}
+        WP_DB_NAME: ${WP_DB_NAME}
+        WP_ADMIN_USER: ${WP_ADMIN_USER}
+        WP_ADMIN_PW: ${WP_ADMIN_PW}
+        WP_ADMIN_MAIL: ${WP_ADMIN_MAIL}
+        WP_USER2: ${WP_USER2}
+        WP_USER2_PW: ${WP_USER2_PW}
+        WP_USER2_MAIL: ${WP_USER2_MAIL}
+        WP_CFG_AUTH_KEY: ${WP_CFG_AUTH_KEY}
+        WP_CFG_SECURE_AUTH_KEY: ${WP_CFG_SECURE_AUTH_KEY}
+        WP_CFG_LOGGED_IN_KEY: ${WP_CFG_LOGGED_IN_KEY}
+        WP_CFG_NONCE_KEY: ${WP_CFG_NONCE_KEY}
+        WP_CFG_AUTH_SALT: ${WP_CFG_AUTH_SALT}
+        WP_CFG_SECURE_AUTH_SALT: ${WP_CFG_SECURE_AUTH_SALT}
+        WP_CFG_LOGGED_IN_SALT: ${WP_CFG_LOGGED_IN_SALT}
+        WP_CFG_NONCE_SALT: ${WP_CFG_NONCE_SALT}
+      healthcheck:
+        test: SCRIPT_FILENAME=/ping.php REQUEST_METHOD=GET cgi-fcgi -bind -connect localhost:9000 | grep 'pong' || exit 1
+        interval: 10s
+        timeout: 5s
+        retries: 3
+        start_period: 5s
+      networks:
+        - inception.net
 
   db:
-    container_name: inc_db
+    container_name: inc-db
+    image: inc-db
     build: ./requirements/mariadb
     restart: unless-stopped
     environment:
@@ -76,29 +78,41 @@ services:
       - wp_db:/var/lib/mysql
     healthcheck:
       test: mariadb -h localhost -u $$WP_DB_USER --password=$$WP_DB_PW -e "SELECT 1;"
-      interval: 15s
+      interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
     networks:
-      - inception_net
+      - inception.net
 
 
 networks:
-  inception_net:
-    name: inception_net
+  inception.net:
+    name: inception.net
     driver: bridge
+
+# named volumes (good) vs. ....
+#
+# only problem on school computers was, you first needed to find out that docker
+# is running rootless with "Docker root dir: /home/fmaurer/goinfre/docker/" =>
+# link subdir `volumes` of this to ~/data.
 
 volumes:
   wp_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_DIR}/wp_data
   wp_db:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_DIR}/wp_db
+
+# ... bind mounts (bad):
+
+# volumes:
+#   wp_data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${DATA_DIR}/wp_data
+#   wp_db:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${DATA_DIR}/wp_db

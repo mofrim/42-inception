@@ -109,9 +109,9 @@ chown -R incept_fpm:www /var/www/html/wp/wp-content
 chmod -R 775 /var/www/html/wp/wp-content
 
 # fix permissions to log-dir so that we can run php-fpm with lesser priveleges
-mkdir -p /var/log/php82
-chown incept_fpm:www /var/log/php82
-chmod 755 /var/log/php82  # Ensure directory is readable/executable by all
+mkdir -p /var/log/php83
+chown incept_fpm:www /var/log/php83
+chmod 755 /var/log/php83  # Ensure directory is readable/executable by all
 
 entry_msg "finally, launching php-fpm for serving wp to nginx"
 
@@ -122,7 +122,7 @@ entry_msg "finally, launching php-fpm for serving wp to nginx"
 #
 #   exec su-exec incept_fpm "$@"
 #
-# which which would fix the problem of having to run the entrypoint as root but
+# which would fix the problem of having to run the entrypoint as root but
 # wanting to launch the CMD as non-root.
 
 exec "$@"
