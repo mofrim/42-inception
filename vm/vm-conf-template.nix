@@ -256,8 +256,8 @@ in
     MatchIsKeyboard "on"
     MatchDevicePath "/dev/input/event*"
     Driver "libinput"
+    Option "XkbOptions" "caps:swapescape"
     EndSection
-
   '';
 
   environment.etc."X11/xorg.conf".text = lib.mkForce ''
