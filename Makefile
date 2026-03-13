@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/03/12 14:39:17 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/13 09:43:50 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -145,30 +145,7 @@ sec-nginx:
 	mv secrets/nginx-server-key.pem $(NGINX_DIR)/conf/server-key.pem
 	$(call log_msg_end,Done creating SSL Certs for nginx!)
 
-# this recipe only works on machines where fmaurer.42.fr was redirected to
-# localhost in /etc/hosts.
-dev: .setup_done
-	$(call log_msg_start,Okay calling docker compose up directly!)
-	$(call log_msg_mid,But first: checking if fmaurer.42.fr is reachable...)
-ifeq ($(shell ping -q -c 1 fmaurer.42.fr 2> /dev/null || echo "nope"), nope)
-	$(call log_msg_end,Not doing it. fmaurer.42.fr needs to be pingable)
-else
-	$(call log_msg_mid,Alrighty! Running docker compose up!)
-	@$(MAKE) -s dock
-endif
-
 #### VM hot stuff ####
-
-long-run: .setup_done
-ifneq ($(INCEPTION_SHELL),ok)
-	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
-else
-	$(call log_msg_start,Now really going for it... Starting vm_setup!)
-	@cd vm && ./0_vm_install_long.sh
-	$(call log_msg_mid,Launching the VM...)
-	@cd vm && ./2_launch_vm.sh
-	$(call log_msg_end,I hope you enjoyed Inception!)
-endif
 
 run: .setup_done
 ifneq ($(INCEPTION_SHELL),ok)
@@ -183,7 +160,9 @@ endif
 
 #### Direct docker stuff ####
 
-dev: dock-build
+dev: .setup_done
+	$(call log_msg_start,Okay calling docker compose up directly!)
+	@$(MAKE) -s dock-build
 
 dock: .setup_done
 	cd $(SRCDIR) && $(DOCKER) compose -p "inc" up
@@ -199,10 +178,8 @@ dock-re: dock-clean dock-build
 dock-clean:
 	$(call log_msg_start,Cleaning runtime docker stuff...)
 	$(output_color_grey)
-	# FIXME: paths will depend on INSCHOOL or Not
-	# rm -rf wp_data wp_db && mkdir wp_data wp_db
 	-$(DOCKER) rm -f $$($(DOCKER) ps -qa)
-	-$(DOCKER) volume rm $$($(DOCKER) volume ls -q)
+	-$(DOCKER) volume rm -f $$($(DOCKER) volume ls -q)
 	-$(DOCKER) network rm -f inception.net
 	$(call log_msg_end,Done.)
 
@@ -223,6 +200,7 @@ sec-clean:
 	rm -f $(NGINX_DIR)/conf/*.pem
 	rm -rf secrets
 
+# wipe everything
 fclean:
 	$(call log_msg_start, Cleaning up hard...)
 	@$(MAKE) -s vm-clean
@@ -237,6 +215,6 @@ fclean:
 
 re: fclean all
 
-.PHONY: all $(NAME) dotenv-vmpw sec-setup sec-ca sec-maria-wp sec-nginx run \
-	dock dock-down dock-re dock-clean dock-build logs vm-clean sec-clean fclean \
-	re long-run dev
+.PHONY: all $(NAME) re fclean dev run dotenv-vmpw sec-setup sec-ca \
+	sec-maria-wp sec-nginx dock dock-down dock-re dock-clean dock-build logs \
+	vm-clean sec-clean
