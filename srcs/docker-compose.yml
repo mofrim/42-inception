@@ -97,26 +97,26 @@ networks:
 # is running rootless with "Docker root dir: /home/fmaurer/goinfre/docker/" =>
 # link subdir `volumes` of this to ~/data.
 
-# volumes:
-#   wp_data:
-#   wp_db:
+volumes:
+  wp_data:
+  wp_db:
 
 # ... bind mounts (bad), but i really do not know how we are supposed to move
 # the volumes to another dir without it!
 # see also: https://github.com/MatchbookLab/local-persist on this matter.
 
-volumes:
-  wp_data:
-    name: inc-wp_data
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_DIR}/wp_data
-  wp_db:
-    name: inc-wp_db
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_DIR}/wp_db
+# volumes:
+#   wp_data:
+#     name: inc-wp_data
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${DATA_DIR}/wp_data
+#   wp_db:
+#     name: inc-wp_db
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${DATA_DIR}/wp_db

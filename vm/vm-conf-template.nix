@@ -505,8 +505,14 @@ in
   # enable necessary hardware support??
   hardware.graphics.enable = true;
 
-  # docker support
-  virtualisation.docker.enable = true;
+  # docker support & hack to have my volumes where subject wants them
+  # all possible dockerd options: https://docs.docker.com/reference/cli/dockerd
+  virtualisation.docker = {
+    enable = true;
+    daemon.settings = {
+      data-root = "/home/fmaurer/data";
+    };
+  };
 
   networking = {
     firewall.enable = false;
