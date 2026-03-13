@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/03/13 09:43:50 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/13 12:43:43 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -158,6 +158,15 @@ else
 	$(call log_msg_end,I hope you enjoyed Inception!)
 endif
 
+run-vm: .setup_done
+ifneq ($(INCEPTION_SHELL),ok)
+	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
+else
+	$(call log_msg_mid,Launching the VM...)
+	@+cd vm && ./2_launch_vm.sh
+	$(call log_msg_end,I hope you enjoyed Inception!)
+endif
+
 #### Direct docker stuff ####
 
 dev: .setup_done
@@ -217,4 +226,4 @@ re: fclean all
 
 .PHONY: all $(NAME) re fclean dev run dotenv-vmpw sec-setup sec-ca \
 	sec-maria-wp sec-nginx dock dock-down dock-re dock-clean dock-build logs \
-	vm-clean sec-clean
+	vm-clean sec-clean run-vm
