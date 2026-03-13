@@ -18,3 +18,5 @@ vm/inception-vmpw
 vm/vm-conf.nix
 vm/inception/
 _play/
+0a_nix_setup_instructions.sh
+vm/conf_dev/
