@@ -53,7 +53,7 @@ in
   };
 
   home-manager.users.root = {
-    stateVersion = "25.11";
+    home.stateVersion = "25.11";
     programs.vim = {
       enable = true;
       extraConfig = ''
