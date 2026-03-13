@@ -1,20 +1,18 @@
 # my inception docker journey 
 
-## notes about finishing this
+## howto fmaurer's inception
 
-- next things i will have to decide are:
+- running `make` will generate all secrets using host openssl tools & drop you
+  into inception shell
+- then running `make run` will
+  
+  1) launch the installer iso vm, copy over the inception-vm nix config,
+     partition the qcow-image and install the system to the qcow
+  2) pause and ask to start the inception-vm, and if you like, do so.
 
-  + will i go only with quick-run version? this means i will have to upload the
-    iso-image somewhere. also i would have to make the repo for the iso
-    available in order to explain it.
-  + bonus?
-  + are all services implemented the way i like it? according to subject?
-
-- what do i do with the normal `make run` recipe? it might be good to still have
-  this ready if the evaluator is weird. also i should work the whole thing
-  through in a normal VM
-
-- test if all the make recipes exit without error in any case!
+- there is also `make dev` to build and run the docker images on the host
+  machine. name resolution will not work unless you are allowed to edit
+  `/etc/hosts`
 
 
 ## ressources
