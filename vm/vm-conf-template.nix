@@ -52,6 +52,39 @@ in
     autologinOnce = true;
   };
 
+  home-manager.users.root = {
+    programs.vim = {
+      enable = true;
+      extraConfig = ''
+      set nocp
+      syntax on
+      set clipboard=unnamed
+      set noswapfile
+      set nobackup
+      set number
+      set smartindent
+      set showmatch
+      set showmode
+      set modeline
+      set expandtab
+      set shiftwidth=2
+      set tabstop=2
+      set wrap
+      set showbreak=+++
+      nnoremap <Space> <Nop>
+      let mapleader=" "
+      map <leader>w :w<cr>
+      map <leader>q :q<cr>
+      map L :tabnext<cr>
+      map H :tabprevious<cr>
+      map <leader>ff :tabedit 
+      map <leader>td :tabdelete<cr>
+      cabbr te tabedit
+      map <leader>te :te
+    '';
+    };
+  };
+
   home-manager.users.fmaurer = {
     xsession.enable = true;
     xsession.windowManager.fluxbox = {
@@ -181,33 +214,36 @@ in
           fi
         '';
       };
-      vim.extraConfig = ''
-        set nocp
-        syntax on
-        set clipboard=unnamed
-        set noswapfile
-        set nobackup
-        set number
-        set smartindent
-        set showmatch
-        set showmode
-        set modeline
-        set expandtab
-        set shiftwidth=2
-        set tabstop=2
-        set wrap
-        set showbreak=+++
-        nnoremap <Space> <Nop>
-        let mapleader=" "
-        map <leader>w :w<cr>
-        map <leader>q :q<cr>
-        map L :tabnext<cr>
-        map H :tabprevious<cr>
-        map <leader>ff :tabedit 
-        map <leader>td :tabdelete<cr>
-        cabbr te tabedit
-        map <leader>te :te
-      '';
+      vim = {
+        enable = true;
+        extraConfig = ''
+          set nocp
+          syntax on
+          set clipboard=unnamed
+          set noswapfile
+          set nobackup
+          set number
+          set smartindent
+          set showmatch
+          set showmode
+          set modeline
+          set expandtab
+          set shiftwidth=2
+          set tabstop=2
+          set wrap
+          set showbreak=+++
+          nnoremap <Space> <Nop>
+          let mapleader=" "
+          map <leader>w :w<cr>
+          map <leader>q :q<cr>
+          map L :tabnext<cr>
+          map H :tabprevious<cr>
+          map <leader>ff :tabedit 
+          map <leader>td :tabdelete<cr>
+          cabbr te tabedit
+          map <leader>te :te
+        '';
+      };
       firefox = {
         enable = true;
         profiles.default = {
