@@ -12,7 +12,6 @@ source $INCEP_TOOLDIR/tools_include.sh
 
 srcdir=srcs
 
-# TODO: test on school computers
 set +e
 at_school="$(hostname | grep 'wolfsburg')"
 on_macmac="$(hostname | grep 'macmac')"
