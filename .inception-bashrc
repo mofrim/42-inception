@@ -23,6 +23,7 @@ function shorten_path() {
 export INCEPTION_SHELL="ok"
 export INCEP_TOOLDIR="$inception_root/tools"
 
+alias ls='ls --color'
 if [[ -z $VM_INSTALL_SHELL && -z $VM_RUN_SHELL ]]; then
   echo
   echo -e '\e[1;96m((( Welcome to the inception-env! )))\e[0m'
