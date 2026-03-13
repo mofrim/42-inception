@@ -14,7 +14,7 @@ fi
 
 source $INCEP_TOOLDIR/tools_include.sh
 
-image_url="https://fridocloud.de/public.php/dav/files/pkTBdZ4pgneq3Ld"
+image_url="https://fridocloud.de/public.php/dav/files/y8mjAtxQHr6f2MH"
 nixos_image="mininixos-inception.iso"
 
 # first patch the vm-conf.nix with current users UID because we want to have
