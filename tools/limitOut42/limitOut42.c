@@ -67,6 +67,7 @@ void  reset_terminal();
 void  signal_handler(__attribute__((unused)) int signum);
 int   get_pos(int *y, int *x);
 char *getBlankLine(int cols);
+char *shortenLine(char *l, int cols);
 
 /* ------------------------------=[ the main ]=------------------------------ */
 
@@ -147,6 +148,12 @@ int main(int ac, char **av)
     {
       if (i < numOfLines)
       {
+        if (strlen(line) - 1 > w.ws_col)
+        {
+          char *tmp = line;
+          line = shortenLine(line, w.ws_col);
+          free(tmp);
+        }
         printf("%s", line);
         lines[i] = strdup(line);
         freeAndNull(&line);
@@ -173,6 +180,12 @@ int main(int ac, char **av)
         for (int j = 0; j < numOfLines; j++)
         {
           printf("%s\r", blankLine);
+          if (strlen(lines[j]) - 1 > w.ws_col)
+          {
+            char *tmp = lines[j];
+            lines[j] = shortenLine(lines[j], w.ws_col);
+            free(tmp);
+          }
           printf("%s", lines[j]);
         }
       }
@@ -221,6 +234,19 @@ char *getBlankLine(int cols)
   bl[i] = 0;
 
   return bl;
+}
+
+char *shortenLine(char *l, int cols)
+{
+  char *sl = (char *)malloc(sizeof(char) * (cols + 2));
+  int i = -1;
+  while(++i < cols - 2)
+    sl[i] = l[i];
+  sl[i] = '.';
+  sl[i+1] = '.';
+  sl[i+2] = '\n';
+  sl[i+3] = 0;
+  return sl;
 }
 
 /* ---------------------------=[ the real stuff ]=--------------------------- */

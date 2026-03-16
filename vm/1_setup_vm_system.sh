@@ -64,6 +64,7 @@ sleep 1
 logmsg ' "nixos-generate-config --root /mnt"'
 $limitOut42 42< <($sshCmd "nixos-generate-config --root /mnt")
 
+
 sleep 1
 
 logmsg 'rsync -vaz ./vm-conf.nix -e "ssh $SSH_KEYOPT -p 5555" root@localhost:/mnt/etc/nixos/configuration.nix'
@@ -73,16 +74,9 @@ sleep 1
 
 logmsg 'ssh -q -o StrictHostKeyChecking=no $SSH_KEYOPT -p 5555 root@localhost "nixos-install --no-root-password"'
 
-mkfifo foo
-$limitOut42 8 10000 42< foo <(script -q -c "$sshCmd 'nixos-install --no-root-password 2>&1'" -f foo)
-rm foo
-
-# $limitOut42 8 10000 42< <($sshCmd "nixos-install --no-root-password 2>&1")
-
+$limitOut42 8 10000 42< <($sshCmd 'nixos-install --no-root-password 2>&1')
 
 sleep 1
 
-
-
 logmsg 'ssh -q -o StrictHostKeyChecking=no $SSH_KEYOPT -p 5555 root@localhost "shutdown -h now"'
-$limitOut42 42< <($sshCmd "shutdown -h now")
+$limitOut42 8 10000 42< <($sshCmd "shutdown -h now")
