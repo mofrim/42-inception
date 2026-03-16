@@ -21,3 +21,4 @@ _play/
 0a_nix_setup_instructions.sh
 vm/conf_dev/
 shell.nix
+tools/limitOut42/limitOut42
