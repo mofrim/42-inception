@@ -155,7 +155,13 @@ int main(int ac, char **av)
         }
         lines[linesMaxIdx] = strdup(line);
         freeAndNull(&line);
-        moveCursor(1, row - numOfLines);
+
+        /* if we would go past the last row of the terminal we have to jump back
+         * from the very last row. else just jump back from current row. */
+        if (row + numOfLines > w.ws_row)
+          moveCursor(1, w.ws_row - numOfLines);
+        else
+          moveCursor(1, row);
         for (int j = 0; j < numOfLines; j++)
           printf("%s", lines[j]);
       }
