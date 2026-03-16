@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/03/14 12:16:06 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/16 11:36:43 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,6 +74,7 @@ $(NAME): .setup_done run
 	$(output_color_grey)
 	@$(MAKE) -s sec-setup
 	@$(MAKE) -s dotenv-vmpw
+	@$(MAKE) -s limitOut42
 	@touch .setup_done && chmod 100 .setup_done
 
 $(INCEPTION_DOTENV):
@@ -143,6 +144,18 @@ sec-nginx:
 	mv secrets/nginx-server-key.pem $(NGINX_DIR)/conf/server-key.pem
 	$(call log_msg_end,Done creating SSL Certs for nginx!)
 
+limitOut42:
+	$(call log_msg_start,Building limitOut42...)
+	$(output_color_grey)
+	@$(MAKE) -C tools/limitOut42
+	$(call log_msg_end,Done!)
+
+limitOut42-clean:
+	$(call log_msg_start,Cleaning limitOut42...)
+	$(output_color_grey)
+	@$(MAKE) -C tools/limitOut42 fclean
+	$(call log_msg_end,Done!)
+
 #### VM hot stuff ####
 
 run: .setup_done
@@ -198,16 +211,20 @@ sec-clean:
 	rm -f $(MARIA_DIR)/ssl/*.pem
 	rm -f $(NGINX_DIR)/conf/*.pem
 	rm -rf secrets
+	$(call log_msg_end,Done!)
 
 # wipe everything
 fclean:
 	$(call log_msg_start, Cleaning up hard...)
-	@$(MAKE) -s vm-clean
-	@$(MAKE) -s dock-clean
-	@$(MAKE) -s sec-clean
+	@$(MAKE) vm-clean
+	@$(MAKE) dock-clean
+	@$(MAKE) sec-clean
+	@$(MAKE) limitOut42-clean
 	$(call log_msg_mid,Removing setup lockfile...)
+	$(output_color_grey)
 	rm -f .setup_done
 	$(call log_msg_mid,Even removing .env an vmpw files...)
+	$(output_color_grey)
 	rm -f $(SRCDIR)/.env vm/inception-vmpw
 	@echo
 	$(call log_msg_end, Cleaning up hard... is done!)
@@ -216,4 +233,4 @@ re: fclean all
 
 .PHONY: all $(NAME) re fclean dev run dotenv-vmpw sec-setup sec-ca \
 	sec-maria-wp sec-nginx dock dock-down dock-re dock-clean dock-build logs \
-	vm-clean sec-clean run-vm
+	vm-clean sec-clean run-vm limitOut42 limitOut42-clean
