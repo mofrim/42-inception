@@ -84,7 +84,7 @@ done
 spinner_cleanup
 
 # and start vm system setup
-echo && logmsg "VM available!"
+echo && logmsg "Install VM available!"
 VM_INSTALL_SHELL="yo" ./1_setup_vm_system.sh
 
 logmsg "Alrighty! Done installing & setting up the Inception VM!"

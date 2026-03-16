@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/03/13 12:43:43 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/14 12:16:06 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,9 +65,7 @@ INCEPTION_VMPW = vm/inception-vmpw
 
 all: $(NAME)
 
-$(NAME): .setup_done
-	$(call log_msg_single,Setup done! Now type \"make run\" or \"make dev\" to start the show!)
-	@+bash -c 'source .inceptionenv'
+$(NAME): .setup_done run
 
 # real-file target for ensuring make will only run once
 .setup_done:
@@ -148,24 +146,16 @@ sec-nginx:
 #### VM hot stuff ####
 
 run: .setup_done
-ifneq ($(INCEPTION_SHELL),ok)
-	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
-else
 	$(call log_msg_start,Now really going for it... Starting vm_setup!)
 	@+cd vm && ./0_vm_install.sh
 	$(call log_msg_mid,Launching the VM...)
 	@+cd vm && ./2_launch_vm.sh
 	$(call log_msg_end,I hope you enjoyed Inception!)
-endif
 
 run-vm: .setup_done
-ifneq ($(INCEPTION_SHELL),ok)
-	$(call log_msg_start,P-L-Z run 'source .inceptionenv' first!)
-else
 	$(call log_msg_mid,Launching the VM...)
 	@+cd vm && ./2_launch_vm.sh
 	$(call log_msg_end,I hope you enjoyed Inception!)
-endif
 
 #### Direct docker stuff ####
 

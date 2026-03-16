@@ -7,10 +7,10 @@ if [[ "${PWD##*/}" != "vm"  ]];then
   exit
 fi
 
-if [ -n "$VM_INSTALL_SHELL" ];then
-  logmsg "still in VM_INSTALL_SHELL. plz hit ctrl-d to avoid from shell-hell."
-  exit
-fi
+# if [ -n "$VM_INSTALL_SHELL" ];then
+#   logmsg "still in VM_INSTALL_SHELL. plz hit ctrl-d to avoid shell-hell."
+#   exit
+# fi
 
 if [[ -z "$INCEP_TOOLDIR" ]];then
   echo -e "\e[31mplz 'source <repo_root>/.inception-env first!\e[0m"
@@ -49,9 +49,10 @@ if ask_yes_no "$(logmsg)" "do you want to launch the vm?"; then
     -device e1000,netdev=net0 \
     -netdev user,id=net0,hostfwd=tcp::4443-:443,hostfwd=tcp::5555-:22 &> /dev/null & disown
 
-  logmsg "for ssh acces run: 'ssh_to_vm'"
   export INCEPTION_VM_PID=$!
+  logmsg "for ssh acces run: 'ssh_to_vm'"
   logmsg "for killing the VM simply run 'killvm'"
+  inception_root=$(git rev-parse --show-toplevel)
   VM_RUN_SHELL="yo" bash --rcfile $inception_root/.inception-bashrc -i
   unset VM_RUN_SHELL
 else
