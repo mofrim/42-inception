@@ -66,6 +66,7 @@ void configure_terminal();
 void reset_terminal();
 void signal_handler(__attribute__((unused)) int signum);
 int  get_pos(int *y, int *x);
+char *getBlankLine(int cols);
 
 /* ------------------------------=[ the main ]=------------------------------ */
 
@@ -125,6 +126,8 @@ int main(int ac, char **av)
     return 1;
   }
 
+  char *blankLine = getBlankLine(w.ws_col);
+
   int    i    = 0;
   char  *line = NULL;
   size_t n    = 0;
@@ -163,7 +166,10 @@ int main(int ac, char **av)
         else
           moveCursor(1, row);
         for (int j = 0; j < numOfLines; j++)
+        {
+          printf("%s\r", blankLine);
           printf("%s", lines[j]);
+        }
       }
       i++;
       usleep(150000);
@@ -198,6 +204,18 @@ int moveCursor(int x, int y)
 void clearScreen(void)
 {
   printf("\x1B[2J");
+}
+
+/* get a blank line matching the width of our terminal */
+char *getBlankLine(int cols)
+{
+  char *blankLine = (char *)malloc(sizeof(char) * (cols + 1));
+  ssize_t i = -1;
+  while(++i < cols)
+    *blankLine = ' ';
+  blankLine[i] = 0;
+
+  return blankLine;
 }
 
 /* ---------------------------=[ the real stuff ]=--------------------------- */
