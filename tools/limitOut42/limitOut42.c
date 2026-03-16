@@ -60,19 +60,19 @@ static int            g_exitLoop;
 
 /* ------------=[ prototypes. implementations after main func ]=------------ */
 
-void freeAndNull(char **ptr);
-int  moveCursor(int x, int y);
-void configure_terminal();
-void reset_terminal();
-void signal_handler(__attribute__((unused)) int signum);
-int  get_pos(int *y, int *x);
+void  freeAndNull(char **ptr);
+int   moveCursor(int x, int y);
+void  configure_terminal();
+void  reset_terminal();
+void  signal_handler(__attribute__((unused)) int signum);
+int   get_pos(int *y, int *x);
 char *getBlankLine(int cols);
 
 /* ------------------------------=[ the main ]=------------------------------ */
 
 int main(int ac, char **av)
 {
-  if (ac > 2)
+  if (ac > 3)
   {
     printf("usage: %s [numOfLines: int = 5] 42< <(you command line)", av[0]);
     return 0;
@@ -81,10 +81,15 @@ int main(int ac, char **av)
   bool passThrough = false;
 
   int numOfLines = 5;
-  if (ac == 2)
+  if (ac >= 2)
     numOfLines = atoi(av[1]);
   if (numOfLines <= 0)
     passThrough = true;
+
+  /* TODO: test this! make it error prone! define sensible upper bounds */
+  unsigned long pause = 150000;
+  if (ac == 3)
+    pause = atol(av[2]);
 
   /* check terminal size and compare to specified numOfLines for output
    * scrolling */
@@ -172,7 +177,7 @@ int main(int ac, char **av)
         }
       }
       i++;
-      usleep(150000);
+      usleep(pause);
     }
   }
 
@@ -209,13 +214,13 @@ void clearScreen(void)
 /* get a blank line matching the width of our terminal */
 char *getBlankLine(int cols)
 {
-  char *blankLine = (char *)malloc(sizeof(char) * (cols + 1));
-  ssize_t i = -1;
-  while(++i < cols)
-    *blankLine = ' ';
-  blankLine[i] = 0;
+  char   *bl = (char *)malloc(sizeof(char) * (cols + 1));
+  ssize_t i  = -1;
+  while (++i < cols)
+    bl[i] = ' ';
+  bl[i] = 0;
 
-  return blankLine;
+  return bl;
 }
 
 /* ---------------------------=[ the real stuff ]=--------------------------- */
@@ -232,9 +237,9 @@ void configure_terminal()
 
   tcsetattr(STDIN_FILENO, TCSANOW, &g_newTermios);
 
+  setvbuf(stdout, NULL, _IONBF, 0);
   printf("\x1B[?25l"); // hide cursor
   printf("\x1B[37m");  // set color to grey
-  setvbuf(stdout, NULL, _IONBF, 0);
   atexit(reset_terminal);
 }
 
