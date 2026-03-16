@@ -1,52 +1,11 @@
 { lib, pkgs, ... }:
 let
-  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/refs/heads/release-25.11.tar.gz";
+  home-manager = (builtins.fetchTarball {
+    url = "https://github.com/nix-community/home-manager/archive/refs/heads/release-25.11.tar.gz";
+  });
   inherit (lib) mkDefault mkForce;
 
-  # nix funcs for mapping the same HM settings to a list of users. fight
-  # code-duplication!
-  f = settings: user: { name = "${user}"; value = settings; };
-  mapHmCfgToUsers = users: settings: builtins.listToAttrs (map (f settings) users);
-in
-  {
-  imports =
-    [
-      (import "${home-manager}/nixos")
-      ./hardware-configuration.nix
-    ];
-
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.timeout = 0;
-
-  # all the software i need
-  environment.systemPackages = with pkgs; [
-    st-snazzy
-    xrandr
-    gnumake
-  ];
-
-  users = {
-    users.root.hashedPassword = "PW_GOES_HERE";
-    users.fmaurer = {
-      isNormalUser = true;
-      uid = 42;
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFG0nJF3ZMmkgkSAG42VOUyN65w0wSEPeZ+229UiZqW1 fmaurer@42" 
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlhRzDpd+8nwaDMnAeXjpyM/M0RhCA7LYZCEFKHWYI7 mofrim@posteo.de"
-      ];
-      hashedPassword = "PW_GOES_HERE";
-      extraGroups = [ "wheel" "docker" ];
-    };
-  };
-
-  # autologin fmaurer on first boot
-  services.getty = {
-    autologinUser = "fmaurer";
-    autologinOnce = true;
-  };
-
-  home-manager.users = mapHmCfgToUsers [ "root" "fmaurer"] {
+  commonHmOpts = {
     home = {
       stateVersion = "25.11";
       shellAliases = {
@@ -88,8 +47,51 @@ in
       '';
     };
   };
+in
+  {
+  imports =
+    [
+      (import "${home-manager}/nixos")
+      ./hardware-configuration.nix
+    ];
 
-  home-manager.users.fmaurer // {
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.timeout = 0;
+
+  # all the software i need
+  environment.systemPackages = with pkgs; [
+    st-snazzy
+    xorg.xinput
+    xorg.xf86inputevdev
+    xorg.xauth
+    xrandr
+    gnumake
+  ];
+
+  users = {
+    users.root.hashedPassword = "PW_GOES_HERE";
+    users.fmaurer = {
+      isNormalUser = true;
+      uid = 42;
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFG0nJF3ZMmkgkSAG42VOUyN65w0wSEPeZ+229UiZqW1 fmaurer@42" 
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlhRzDpd+8nwaDMnAeXjpyM/M0RhCA7LYZCEFKHWYI7 mofrim@posteo.de"
+      ];
+      hashedPassword = "PW_GOES_HERE";
+      extraGroups = [ "wheel" "docker" ];
+    };
+  };
+
+  # autologin fmaurer on first boot
+  services.getty = {
+    autologinUser = "fmaurer";
+    autologinOnce = true;
+  };
+
+  home-manager.users.root = commonHmOpts;
+
+  home-manager.users.fmaurer = lib.recursiveUpdate commonHmOpts  {
     xsession.enable = true;
     xsession.windowManager.fluxbox = {
       enable = true;
@@ -182,6 +184,9 @@ in
         session.ignoreBorder:     false
       '';
     };
+    home.keyboard.options = [
+      "caps:swapescape"
+    ];
     programs = {
       bash = {
         enable = true;
@@ -269,11 +274,16 @@ in
   security.sudo.wheelNeedsPassword = false;
 
   # Minimal dbus (required for Firefox and modern apps)
-  services.dbus.enable = true;
-
-  services.libinput.enable = true;
-
-  services.openssh.enable = true;
+  services = {
+    dbus.enable = true;
+    libinput.enable = true;
+    openssh.enable = true;
+    xserver.enable = true;
+    xserver.displayManager.startx = {
+      enable = true;
+      generateScript = true;
+    };
+  };
 
   fileSystems."/home/fmaurer/inception" = {
     device = "shared";
@@ -296,6 +306,7 @@ in
 
   # enable necessary hardware support??
   hardware.graphics.enable = true;
+  hardware.enableRedistributableFirmware = lib.mkForce false;
 
   # docker support & hack to have my volumes where subject wants them
   # all possible dockerd options: https://docs.docker.com/reference/cli/dockerd
@@ -344,7 +355,6 @@ in
 
   xdg = {
     autostart.enable = mkForce false;
-    icons.enable = mkForce false;
     mime.enable = mkForce false;
     sounds.enable = mkForce false;
   };
