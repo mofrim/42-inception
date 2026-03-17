@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
+.fira {
+  font-family: 'Fira Sans';
+}
+
+* {
+	text-align: center;
+	font-size: 20px;
+}
+
+.main-page {
+	margin: 200px 100px 20px 100px;
+}
+
+.fantasy {
+	font-family: fantasy;
+}
+
+.mono {
+	font-family: monospace;
+}
+
+.serif {
+	font-family: serif;
+}
+
+.sansserif {
+	font-family: sans-serif;
+}
+
+.div1 {
+	margin: 20px 100px 20px 100px;
+	background-color: aliceblue;
+	border-radius: 10px;
+	padding: 2px;
+
+	/* like this is does not look so good:  */
+	/* transition: background-color 0.3s ease; */
+
+	/* ... but like this, perfect!*/
+	transition: all 0.3s ease;
+}
+
+.div1:hover {
+	box-shadow: 0px 0px 8px 12px rgba(0,0,0,0.2);
+	background-color: rgba(0, 100, 255, 0.5);
+}
+
+.div2 {
+	margin: 20px 100px 20px 100px;
+	background-color: lightcoral;
+	border-radius: 10px;
+	padding: 2px;
+}
+
+a:hover {
+	background-color: pink;
+}
+
+p:hover {
+	background-color: yellow;
+}
+
+.breathing {
+  background-color: #3498db;
+  animation: breathe 2s ease-in-out infinite alternate;
+}
+
+.mybutton {
+	background-color: black;
+	color: white;
+	border-radius: 10px;
+	border: 2px solid transparent;
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+}
+
+.mybutton:hover {
+	color: limegreen;
+  box-shadow: 0px 0px 5px 12px rgba(0,0,0,0.2);
+}
+
+.mybutton:active {
+  background-color: #1f5f8b;
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+@keyframes breathe {
+  0% {
+    background-color: #3498db;
+    transform: scale(1);
+  }
+  100% {
+    background-color: white;
+    transform: scale(1.05);
+  }
+}
+
+/* CSS-only modal ! */
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal:target {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
