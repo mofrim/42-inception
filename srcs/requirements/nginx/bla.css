@@ -29,12 +29,31 @@
 	font-family: sans-serif;
 }
 
+.div0 {
+	margin: 20px 100px 100px 100px;
+	background-color: aliceblue;
+	border-radius: 10px;
+	padding: 10px;
+  font-size: 2rem;
+	/* like this is does not look so good:  */
+	/* transition: background-color 0.3s ease; */
+
+	/* ... but like this, perfect!*/
+	transition: all 0.3s ease;
+  animation: breathe 2s ease-in-out infinite alternate;
+}
+
+.div0 code {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 .div1 {
 	margin: 20px 100px 20px 100px;
 	background-color: aliceblue;
 	border-radius: 10px;
-	padding: 2px;
-
+	padding: 5px;
+  font-size: 1.5rem;
 	/* like this is does not look so good:  */
 	/* transition: background-color 0.3s ease; */
 
@@ -64,6 +83,7 @@ p:hover {
 
 .breathing {
   background-color: #3498db;
+	border-radius: 10px;
   animation: breathe 2s ease-in-out infinite alternate;
 }
 
@@ -85,6 +105,19 @@ p:hover {
   background-color: #1f5f8b;
   transform: translateY(2px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn {
+	background-color: black;
+	color: limegreen;
+	border-radius: 10px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.btn a {
+  font-style: none;
+
 }
 
 @keyframes breathe {

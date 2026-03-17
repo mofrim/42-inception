@@ -10,6 +10,7 @@ COPY conf/server-cert.pem /etc/nginx/ssl/
 COPY conf/server-key.pem /etc/nginx/ssl/
 
 COPY ./index.html /var/www/html
+COPY ./bla.css /var/www/html
 
 RUN addgroup -g 1001 www && adduser nginx www \
 			&& chown -R nginx:www /var/www/html;

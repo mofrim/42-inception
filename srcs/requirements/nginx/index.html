@@ -1,76 +1,53 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Welcome to fmaurer's Inception!</title>
+    <title>Hack the Planet!</title>
+    <link href="./bla.css" rel="stylesheet" />
   </head>
-  <body>
-    <style>
+  <body class="main-page">
+    <div class="div0">This is <code>fmaurer's Inception extra-page</code>!</div>
 
-    :root {
-      --first-color: #64868e;
-      --second-color: #98b4a6;
-      --third-color: #d1e4d1;
-      --fourth-color: #f3fbf1;
-    }
+    <button class="mybutton" style="margin-bottom: 40px;">Hack the planet!</button>
 
+    <div class="div1">this is <code>code style: #include stdio.h</stdio></code>!</div>
 
-      a:hover {
-        background-color: pink;
-      }
-      p:hover {
-        background-color: yellow;
-      }
-      .main-page {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-        width: 100%;
-        border-radius: 10px;
-        background-color: var(--first-color);
-      }
-      .card-container {
-        display: flex;
-        flex-wrap: wrap; /* allows cards to wrap */
-        gap: 10px; /* space between cards */
-        padding: 50px; /* space around */
-        border-radius: 10px;
-      background-color: var(--second-color);
-      }
+    <div class="div1">this is <code>code style: #include stdio.h</stdio></code>!</div>
 
-      .card,
-      .cardSpecial {
-        flex: 1 1 50px; /* flex-grow, flex-shrink, flex-basis */
-        background: lightgray;
-        padding: 20px;
-        text-align: center;
-        border-radius: 10px;
-      }
+		<div class="div1 mono">
+			this div is in mono font
+		</div>
 
-      .cardSpecial {
-        flex-grow: 2;
-      }
+		<div class="div1 serif">
+			this div is serif	font
+		</div>
 
-      .card:hover {
-        background-color: yellow;
-      }
+		<div class="div1 sansserif">
+			this div is sans-serif font 0123445 => ?
+		</div>
 
-      a {
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        text-decoration: none;
-      }
-    </style>
-    <div class="main-page">
-      <p>test</p>
-      <code>Hello, Nginx with TLSv1.3!</code>
-      <div class="card-container">
-        <div class="card">Card 1</div>
-        <div class="cardSpecial">Bla.</div>
-        <div class="card">Card 3</div>
-        <div class="card"><a href="https://powderguide.com">PG</a></div>
-      </div>
-    </div>
-  </body>
+		<div class="fira breathing">
+			this div is fira font 012345 => ? ... and breathing!!!
+		</div>
+
+		<div class="div2">
+			<button class="mybutton">click me!</button>
+		</div>
+
+		<div class="div1">
+			<a href="#modal" >
+        <button class="btn">Open Modal</button>
+      </a>
+		</div>
+
+		<div id="modal" class="modal">
+			<div class="modal-content">
+				<h2>Yeah! WTF?! What CSS can do! </h2>
+				<p>This is a CSS-only modal!</p>
+				<a href="#" class="btn">Close</a>
+			</div>
+		</div>
+
+	</body>
 </html>
