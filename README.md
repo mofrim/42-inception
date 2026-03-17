@@ -154,6 +154,7 @@ I think what the subject did not want is specifying this on the command line.
   this for testing ssl setup of my own sites.
 - [https://search.nixos.org/options](https://search.nixos.org/options)
 - [nixos.org](https://nixos.org/)
+- [redis documentation](https://redis-doc-test.readthedocs.io/en/latest/topics/quickstart/#installing-redis)
 - and many more
 
 ## Learnings
