@@ -6,6 +6,7 @@
 - MariaDB
 - Redis Server
 - Php-fpm 8.3 serving Wordpress 6.9.4
+- A super-giga-mega extra-page served under `DOMAIN_NAME/test`
 
 ## How to start / stop the project
 
