@@ -6,7 +6,7 @@
 #    By: fmaurer <fmaurer42@posteo.de>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/11 20:50:49 by fmaurer           #+#    #+#              #
-#    Updated: 2026/03/16 11:36:43 by fmaurer          ###   ########.fr        #
+#    Updated: 2026/03/17 09:34:04 by fmaurer          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -72,8 +72,8 @@ $(NAME): .setup_done run
 	$(call log_msg_start,Alrighty! Running for the first time. Doing setup...)
 	@sleep 0.5
 	$(output_color_grey)
-	@$(MAKE) -s sec-setup
 	@$(MAKE) -s dotenv-vmpw
+	@$(MAKE) -s sec-setup
 	@$(MAKE) -s limitOut42
 	@touch .setup_done && chmod 100 .setup_done
 

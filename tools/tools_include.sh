@@ -108,6 +108,18 @@ function spinner_cleanup() {
 	fi
 }
 
+# reads the current DOMAIN_NAME set in srcs/.env
+function get_current_domain() {
+	inception_root=$(git rev-parse --show-toplevel)
+	dotenv="$inception_root/srcs/.env"
+	if [[ ! -f $dotenv || -z "$(grep DOMAIN_NAME $dotenv)" ]]; then
+		echo ""
+	else
+		cur_domain="$(grep DOMAIN_NAME $dotenv | cut -d '=' -f 2)"
+		echo $cur_domain
+	fi
+}
+
 # set optional ssh keyfile option depending on location (school / not
 # school)
 if [ -n "$(hostname | grep wolfsburg)" ]; then

@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     volumes:
       - wp_data:/var/www/html/wp
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
     ports:
       - "443:443"
     healthcheck:

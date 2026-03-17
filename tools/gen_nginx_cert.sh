@@ -13,7 +13,7 @@ source $INCEP_TOOLDIR/tools_include.sh
 DAYS=365
 ORG="FMaurerSoft"
 OU="FmaurerIT"
-CN="fmaurer.42.fr"
+CN="$(get_current_domain)"
 
 if [[ ! -e ./ca-key.pem || ! -e ./ca-cert.pem ]]; then
   logmsg -e "ERROR: CA certificate has to be created first!"
@@ -36,7 +36,7 @@ openssl x509 -req -in nginx-server-req.csr -CA ca-cert.pem -CAkey ca-key.pem \
   -extfile <(cat <<EOF
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
-subjectAltName = DNS:fmaurer.42.fr
+subjectAltName = DNS:$(get_current_domain)
 EOF
 )
 
