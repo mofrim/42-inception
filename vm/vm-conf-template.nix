@@ -279,6 +279,12 @@ in
     libinput.enable = true;
     openssh.enable = true;
     xserver.enable = true;
+    xserver.resolutions = [
+      {
+        x = 1920;
+        y = 1080;
+      }
+    ];
     xserver.displayManager.startx = {
       enable = true;
       generateScript = true;
