@@ -13,7 +13,7 @@ fclean: clean
 re: fclean all
 
 test0: all
-	./limitOut42 42< <(cat limitOut42.c)
+	bash -c './limitOut42 42< <(cat limitOut42.c)'
 
 .phony: all test0 clean fclean
 
