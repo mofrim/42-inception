@@ -36,6 +36,9 @@ RUN apk update && apk upgrade && apk add --no-cache \
 			bash \
 			gzip;
 
+# redis deps
+RUN apk add --no-cache php83-pecl-redis php83-ctype;
+
 # setting GID explicitly here bc we want to keep them in sync across all
 # containers
 RUN addgroup -g 1001 www && adduser -D -G www incept_fpm;

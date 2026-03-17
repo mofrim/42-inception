@@ -32,6 +32,8 @@ services:
       depends_on:
         db:
           condition: service_healthy
+        redis:
+          condition: service_healthy
       volumes:
         - wp_data:/var/www/html/wp
       environment:
@@ -55,6 +57,8 @@ services:
         WP_CFG_SECURE_AUTH_SALT: ${WP_CFG_SECURE_AUTH_SALT}
         WP_CFG_LOGGED_IN_SALT: ${WP_CFG_LOGGED_IN_SALT}
         WP_CFG_NONCE_SALT: ${WP_CFG_NONCE_SALT}
+        REDIS_HOST: redis
+        REDIS_PW: ${REDIS_PW}
       healthcheck:
         test: SCRIPT_FILENAME=/ping.php REQUEST_METHOD=GET cgi-fcgi -bind -connect localhost:9000 | grep 'pong' || exit 1
         interval: 10s
@@ -85,6 +89,25 @@ services:
     networks:
       - inception.net
 
+  redis:
+    container_name: inc-redis
+    image: inc-redis
+    build: ./bonus/redis
+    restart: unless-stopped
+    environment:
+        REDIS_PW: ${REDIS_PW}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: redis-cli -a "$$REDIS_PW" ping | grep PONG
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - inception.net
+
+
 
 networks:
   inception.net:
@@ -100,6 +123,7 @@ networks:
 volumes:
   wp_data:
   wp_db:
+  redis_data:
 
 # ... bind mounts (bad), see also:
 # https://github.com/MatchbookLab/local-persist on this matter.

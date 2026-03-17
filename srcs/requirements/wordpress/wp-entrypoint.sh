@@ -45,6 +45,10 @@ if [ ! -f "$wp_dir/wp-config.php" ] && [ -f "$wp_dir/wp-config-sample.php" ]; th
     do_the_crazy_sed "SECURE_AUTH_SALT" "$WP_CFG_SECURE_AUTH_SALT" $wp_dir
     do_the_crazy_sed "LOGGED_IN_SALT" "$WP_CFG_LOGGED_IN_SALT" $wp_dir
     do_the_crazy_sed "NONCE_SALT" "$WP_CFG_NONCE_SALT" $wp_dir
+
+		sed -i "/Add any custom/a\define('WP_REDIS_HOST', 'redis');" $wp_dir/wp-config.php
+		sed -i "/Add any custom/a\define('WP_REDIS_PORT', '6379');" $wp_dir/wp-config.php
+		sed -i "/Add any custom/a\define('WP_REDIS_PASSWORD', '$REDIS_PW');" $wp_dir/wp-config.php
   else
     entry_msg "not editing wp-config..."
 fi
@@ -103,6 +107,10 @@ if ! $wp_cmd core is-installed --url="$DOMAIN_NAME"; then
 	$wp_cmd theme delete twentytwentythree
 	$wp_cmd plugin delete akismet
 	$wp_cmd plugin delete hello
+
+	# bonus: install redis plugin
+	$wp_cmd plugin install redis-cache --activate
+	$wp_cmd redis enable
 else
   entry_msg "alrighty, wp is already setup. nothing to do here."
 fi
