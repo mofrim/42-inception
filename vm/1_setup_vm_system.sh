@@ -53,9 +53,10 @@ $limitOut42 42< <(rsync -vaz ./vm-conf.nix -e "ssh $SSH_KEYOPT -p 5555" root@loc
 
 sleep 1
 
+clear
 logmsg 'ssh -q -o StrictHostKeyChecking=no $SSH_KEYOPT -p 5555 root@localhost "nixos-install --no-root-password"'
 
-$limitOut42 14 10000 42< <($sshCmd 'nixos-install --no-root-password 2>&1')
+$limitOut42 23 10000 42< <($sshCmd 'nixos-install --no-root-password 2>&1')
 
 sleep 1
 
