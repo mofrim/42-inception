@@ -9,6 +9,7 @@ services:
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
       NGINX_PORT: ${NGINX_PORT}
+      PHPFPM_PORT: ${PHPFPM_PORT}
     ports:
       - "$NGINX_PORT:$NGINX_PORT"
     healthcheck:
@@ -43,6 +44,7 @@ services:
         DOMAIN_NAME: ${DOMAIN_NAME}
         NGINX_PORT: ${NGINX_PORT}
         MARIADB_PORT: ${MARIADB_PORT}
+        PHPFPM_PORT: ${PHPFPM_PORT}
         WP_SITE_TITLE: ${WP_SITE_TITLE}
         WP_DB_HOST: ${WP_DB_HOST}
         WP_DB_USER: ${WP_DB_USER}
@@ -65,7 +67,7 @@ services:
         REDIS_HOST: redis
         REDIS_PW: ${REDIS_PW}
       healthcheck:
-        test: SCRIPT_FILENAME=/ping.php REQUEST_METHOD=GET cgi-fcgi -bind -connect localhost:9000 | grep 'pong' || exit 1
+        test: SCRIPT_FILENAME=/ping.php REQUEST_METHOD=GET cgi-fcgi -bind -connect localhost:$$PHPFPM_PORT | grep 'pong' || exit 1
         interval: 10s
         timeout: 5s
         retries: 3

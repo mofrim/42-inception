@@ -24,6 +24,16 @@ do_the_crazy_sed () {
   sed -i "s|define( '$key_name', \+'put your unique phrase here' );|define( '$key_name', '$escaped_key_content');|" $wpdir/wp-config.php
 }
 
+
+config_file="/etc/php83/php-fpm.d/wordpress.conf"
+
+if [[ -f $config_file ]]; then
+	entry_msg "Sed-ing in PHPFPM_PORT = $PHPFPM_PORT"
+	sed -i "s/listen = .*/listen = 0.0.0.0:$PHPFPM_PORT/" $config_file
+else
+	exit 1
+fi
+
 # generate wp-config.php if it doesn't exist. on first-run wordpress will
 # already be downloaded and extracted to $wp_dir from the corresponding step in
 # Dockerfile. so all we have to do here is copy over wp-config-sample.php and

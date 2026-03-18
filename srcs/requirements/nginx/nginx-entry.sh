@@ -15,6 +15,8 @@ if [[ -f $config_file ]]; then
 	entry_msg "... and the current port"
 	sed -i "s/listen [0-9]\+ ssl;/listen $NGINX_PORT ssl;/" $config_file
 	sed -i "s/listen \[.*;/listen \[::\]:$NGINX_PORT ssl;/" $config_file
+	entry_msg "... and the current php-fpm port"
+	sed -i "s/fastcgi_pass wp.*;/fastcgi_pass wp:$PHPFPM_PORT;/" $config_file
 fi
 
 exec "$@"
