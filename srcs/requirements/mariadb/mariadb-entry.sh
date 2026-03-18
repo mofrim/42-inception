@@ -7,6 +7,15 @@ function entry_msg () {
   echo "[mariadb-entrypoint.sh] $1"
 }
 
+config_file="/etc/mysql/my.cnf"
+
+if [[ -f $config_file ]]; then
+	entry_msg "MariaDB port $MARIADB_PORT"
+	sed -i "s/port=[0-9]\+/port=$MARIADB_PORT/" $config_file
+else
+	exit 1
+fi
+
 # check if mariadb data directory is empty (first run)
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	entry_msg "Initializing MariaDB database..."

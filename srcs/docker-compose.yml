@@ -8,10 +8,11 @@ services:
       - wp_data:/var/www/html/wp
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
+      NGINX_PORT: ${NGINX_PORT}
     ports:
-      - "443:443"
+      - "$NGINX_PORT:$NGINX_PORT"
     healthcheck:
-      test: curl -kf https://fmaurer.42.fr
+      test: curl -kf https://fmaurer.42.fr:$$NGINX_PORT
       interval: 15s
       timeout: 3s
       retries: 3
@@ -40,6 +41,8 @@ services:
         - wp_data:/var/www/html/wp
       environment:
         DOMAIN_NAME: ${DOMAIN_NAME}
+        NGINX_PORT: ${NGINX_PORT}
+        MARIADB_PORT: ${MARIADB_PORT}
         WP_SITE_TITLE: ${WP_SITE_TITLE}
         WP_DB_HOST: ${WP_DB_HOST}
         WP_DB_USER: ${WP_DB_USER}

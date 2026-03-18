@@ -35,7 +35,7 @@ if [ ! -f "$wp_dir/wp-config.php" ] && [ -f "$wp_dir/wp-config-sample.php" ]; th
     sed -i "s/database_name_here/$WP_DB_NAME/" $wp_dir/wp-config.php
     sed -i "s/username_here/$WP_DB_USER/" $wp_dir/wp-config.php
     sed -i "s/password_here/$WP_DB_PW/" $wp_dir/wp-config.php
-    sed -i "s/localhost/$WP_DB_HOST/" $wp_dir/wp-config.php
+    sed -i "s/localhost/$WP_DB_HOST:$MARIADB_PORT/" $wp_dir/wp-config.php
 
     do_the_crazy_sed "AUTH_KEY" "$WP_CFG_AUTH_KEY" $wp_dir
     do_the_crazy_sed "SECURE_AUTH_KEY" "$WP_CFG_SECURE_AUTH_KEY" $wp_dir
@@ -85,13 +85,20 @@ fi
 #   sleep 1
 # done
 
+# set correct siteurl
+if [ $NGINX_PORT -eq 443 ]; then
+	SITEURL="$DOMAIN_NAME"
+else
+	SITEURL="$DOMAIN_NAME:$NGINX_PORT"
+fi
+
 # alias for otherwise long command
 # NOTE: using `--url="${DOMAIN_NAME}` with _every_ wp-cli command to avoid
 # Warning that HTTP_HOST is not set
-# the full command will be: wp --path=/var/www/html/wp --url=fmaurer.42.fr
-wp_cmd="wp --path=$wp_dir --url=$DOMAIN_NAME"
+# the full command will be: wp --path=/var/www/html/wp --url=fmaurer.42.fr:443
+wp_cmd="wp --path=$wp_dir --url=$SITEURL"
 
-if ! $wp_cmd core is-installed --url="$DOMAIN_NAME"; then
+if ! $wp_cmd core is-installed --url="$SITEURL"; then
   entry_msg "setting up wordpress using wp-cli"
   $wp_cmd core install --title="$WP_SITE_TITLE" --admin_user="$WP_ADMIN_USER" \
     --admin_password="$WP_ADMIN_PW" --admin_email="$WP_ADMIN_MAIL" --skip-email
@@ -99,8 +106,8 @@ if ! $wp_cmd core is-installed --url="$DOMAIN_NAME"; then
     --user_pass="$WP_USER2_PW"
 
   # making the site even healthier with these two:
-  $wp_cmd option update siteurl "https://$DOMAIN_NAME" --allow-root
-  $wp_cmd option update home "https://$DOMAIN_NAME" --allow-root
+  $wp_cmd option update siteurl "https://$SITEURL" --allow-root
+  $wp_cmd option update home "https://$SITEURL" --allow-root
 
 	# cleaning up for good site health
 	$wp_cmd theme delete twentytwentyfour

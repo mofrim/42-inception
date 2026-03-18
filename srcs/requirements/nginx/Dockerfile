@@ -15,9 +15,6 @@ COPY ./bla.css /var/www/html
 RUN addgroup -g 1001 www && adduser nginx www \
 			&& chown -R nginx:www /var/www/html;
 
-# has no effect only here for explicitness
-EXPOSE 443
-
 # create entrypoint script
 COPY nginx-entry.sh /nginx-entry.sh
 RUN chmod 700 /nginx-entry.sh;

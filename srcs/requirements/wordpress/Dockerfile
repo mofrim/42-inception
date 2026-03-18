@@ -75,9 +75,9 @@ COPY ./mysql/*.pem /etc/mysql/ssl/
 COPY ./conf/php-fpm.conf /etc/php83/php-fpm.d/wordpress.conf
 
 # create entrypoint script
-COPY wp-entrypoint.sh /wp-entrypoint.sh
-RUN chmod 700 /wp-entrypoint.sh;
-ENTRYPOINT ["/wp-entrypoint.sh"]
+COPY wp-entry.sh /wp-entry.sh
+RUN chmod 700 /wp-entry.sh;
+ENTRYPOINT ["/wp-entry.sh"]
 
 COPY ping.php /ping.php
 RUN chown incept_fpm:www /ping.php && chmod 700 /ping.php;

@@ -15,9 +15,9 @@ RUN chown -R mysql:root /etc/mysql/ssl/;
 
 RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld;
 
-COPY mariadb-entrypoint.sh /mariadb-entrypoint.sh
-RUN chmod 700 /mariadb-entrypoint.sh;
-ENTRYPOINT ["/mariadb-entrypoint.sh"]
+COPY mariadb-entry.sh /mariadb-entry.sh
+RUN chmod 700 /mariadb-entry.sh;
+ENTRYPOINT ["/mariadb-entry.sh"]
 
 # launching mariadb using `mariadbd-safe` is the recommended way for
 # non-system-service use.
