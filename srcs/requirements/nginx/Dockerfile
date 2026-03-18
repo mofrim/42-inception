@@ -1,6 +1,7 @@
 FROM alpine:3.22
 
-RUN apk update && apk upgrade && apk add --no-cache nginx openssl curl bash;
+RUN apk update && apk upgrade && apk add --no-cache nginx openssl curl bash \
+			iproute2-ss;
 
 # Create directories for SSL certificates
 RUN mkdir -p /etc/nginx/ssl /var/www/html;

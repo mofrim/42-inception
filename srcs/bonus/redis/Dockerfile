@@ -1,6 +1,6 @@
 FROM alpine:3.22
 
-RUN apk update && apk upgrade && apk add --no-cache redis bash;
+RUN apk update && apk upgrade && apk add --no-cache redis bash iproute2-ss;
 
 COPY redis.conf /etc/redis/redis.conf
 

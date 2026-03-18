@@ -34,6 +34,7 @@ RUN apk update && apk upgrade && apk add --no-cache \
 			fcgi \
 			tar \
 			bash \
+			iproute2-ss \
 			gzip;
 
 # redis deps

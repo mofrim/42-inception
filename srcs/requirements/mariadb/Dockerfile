@@ -1,7 +1,8 @@
 FROM alpine:3.22
 
 # client is needed for the entrypoint
-RUN apk update && apk upgrade && apk add --no-cache mariadb mariadb-client bash;
+RUN apk update && apk upgrade && apk add --no-cache mariadb mariadb-client \
+			iproute2-ss bash;
 
 # after running this there is also a user named 'mysql' and the dir
 # `/var/lib/mysql` owned by this user on the system
