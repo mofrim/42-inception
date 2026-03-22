@@ -20,12 +20,7 @@ individual *Dockerfiles* for baking them into each into a separate
 managing persistent data-storage, observing there health-status these services
 have to be orchestrated via a *docker-compose-file*. That's it. Ah! There are 2
 little constraints given by the `subject.pdf` that urge us to build and launch
-the whole thing in a *Virtual Machine*:
-
-- The hostname of our website should be `https://LOGIN.42.fr`, where `LOGIN` is
-  our own login. And it should really run like that when we open the URL in a
-  browser. This is only possible by editing the `/etc/hosts` file under Linux
-  which we can't on school-computers.
+the whole thing in a *Virtual Machine*: - The hostname of our website should be `https://LOGIN.42.fr`, where `LOGIN` is our own login. And it should really run like that when we open the URL in a browser. This is only possible by editing the `/etc/hosts` file under Linux which we can't on school-computers.
 
 - The persistent-storage volumes should be stored in `/home/LOGIN/data` dir
   **without** the use of so-called *bind-mounts*. With bind-mounts allowed we
@@ -144,7 +139,7 @@ This has to be in every entrypoint-script. As it makes the command given as
 `CMD` in the `Dockerfile` being executed. If we omit this line, the `CMD` will
 never be run.
 
-## The .env-File
+## The .env-File vs. Docker secrets
 
 What is the best practice for configuring a docker-compose project? The answer
 for most project used today is: *Setting common variables that have to be shared
@@ -278,6 +273,10 @@ Ah! The network. Yeah, docker-networking is actually pretty easy. Just define a
 network like i did and add it to every service, et voilà, from each services
 container the other containers are reachable by there sercvice name, e.g.
 `nginx` in the nginx case.
+
+In principle there is another actually even cleaner approach to managing secrets
+which is *docker secrets* but it is a bit more complex and so far using
+`.env`-files is usual approach. See [here](https://docs.docker.com/compose/how-tos/use-secrets/) for more on this topic.
 
 ## The Makefile
 
